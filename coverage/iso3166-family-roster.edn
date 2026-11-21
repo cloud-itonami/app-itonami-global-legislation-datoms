@@ -1,0 +1,233 @@
+;; AWAI-3822: one row per listed public family member.
+;; Codes only (2- and 3-character): no ISO country names are held.
+;; Reruns produce a new dated receipt + new roster version, never an
+;; in-place silent update. D6 (vocabulary home) still open: this file
+;; lives next to the verifier (coverage/) until D6 lands.
+{:roster/receipt "coverage/iso3166-family-receipt-20261121.edn"
+ :roster/as-of "2026-11-21"
+ :roster/remainder-policy "explicit :no-counterpart rows with :reason; an explicitly empty remainder section is a pass"
+ :roster/rows [{:member "app-itonami-cloud-itonami-iso3166-ago" :member/alpha3 "AGO" :counterpart "AGO"}
+ {:member "app-itonami-cloud-itonami-iso3166-alb" :member/alpha3 "ALB" :counterpart "ALB"}
+ {:member "app-itonami-cloud-itonami-iso3166-and" :member/alpha3 "AND" :counterpart "AND"}
+ {:member "app-itonami-cloud-itonami-iso3166-are" :member/alpha3 "ARE" :counterpart "ARE"}
+ {:member "app-itonami-cloud-itonami-iso3166-arg" :member/alpha3 "ARG" :counterpart "ARG"}
+ {:member "app-itonami-cloud-itonami-iso3166-arm" :member/alpha3 "ARM" :counterpart "ARM"}
+ {:member "app-itonami-cloud-itonami-iso3166-atg" :member/alpha3 "ATG" :counterpart "ATG"}
+ {:member "app-itonami-cloud-itonami-iso3166-aus" :member/alpha3 "AUS" :counterpart "AUS"}
+ {:member "app-itonami-cloud-itonami-iso3166-aut" :member/alpha3 "AUT" :counterpart "AUT"}
+ {:member "app-itonami-cloud-itonami-iso3166-aze" :member/alpha3 "AZE" :counterpart "AZE"}
+ {:member "app-itonami-cloud-itonami-iso3166-bdi" :member/alpha3 "BDI" :counterpart "BDI"}
+ {:member "app-itonami-cloud-itonami-iso3166-bel" :member/alpha3 "BEL" :counterpart "BEL"}
+ {:member "app-itonami-cloud-itonami-iso3166-ben" :member/alpha3 "BEN" :counterpart "BEN"}
+ {:member "app-itonami-cloud-itonami-iso3166-bfa" :member/alpha3 "BFA" :counterpart "BFA"}
+ {:member "app-itonami-cloud-itonami-iso3166-bgd" :member/alpha3 "BGD" :counterpart "BGD"}
+ {:member "app-itonami-cloud-itonami-iso3166-bgr" :member/alpha3 "BGR" :counterpart "BGR"}
+ {:member "app-itonami-cloud-itonami-iso3166-bhr" :member/alpha3 "BHR" :counterpart "BHR"}
+ {:member "app-itonami-cloud-itonami-iso3166-bhs" :member/alpha3 "BHS" :counterpart "BHS"}
+ {:member "app-itonami-cloud-itonami-iso3166-bih" :member/alpha3 "BIH" :counterpart "BIH"}
+ {:member "app-itonami-cloud-itonami-iso3166-blr" :member/alpha3 "BLR" :counterpart "BLR"}
+ {:member "app-itonami-cloud-itonami-iso3166-blz" :member/alpha3 "BLZ" :counterpart "BLZ"}
+ {:member "app-itonami-cloud-itonami-iso3166-bol" :member/alpha3 "BOL" :counterpart "BOL"}
+ {:member "app-itonami-cloud-itonami-iso3166-bra" :member/alpha3 "BRA" :counterpart "BRA"}
+ {:member "app-itonami-cloud-itonami-iso3166-brb" :member/alpha3 "BRB" :counterpart "BRB"}
+ {:member "app-itonami-cloud-itonami-iso3166-brn" :member/alpha3 "BRN" :counterpart "BRN"}
+ {:member "app-itonami-cloud-itonami-iso3166-btn" :member/alpha3 "BTN" :counterpart "BTN"}
+ {:member "app-itonami-cloud-itonami-iso3166-bwa" :member/alpha3 "BWA" :counterpart "BWA"}
+ {:member "app-itonami-cloud-itonami-iso3166-caf" :member/alpha3 "CAF" :counterpart "CAF"}
+ {:member "app-itonami-cloud-itonami-iso3166-can" :member/alpha3 "CAN" :counterpart "CAN"}
+ {:member "app-itonami-cloud-itonami-iso3166-che" :member/alpha3 "CHE" :counterpart "CHE"}
+ {:member "app-itonami-cloud-itonami-iso3166-chl" :member/alpha3 "CHL" :counterpart "CHL"}
+ {:member "app-itonami-cloud-itonami-iso3166-chn" :member/alpha3 "CHN" :counterpart "CHN"}
+ {:member "app-itonami-cloud-itonami-iso3166-chn-advertising" :member/alpha3 "CHN" :counterpart "CHN" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-chn-market-research" :member/alpha3 "CHN" :counterpart "CHN" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-civ" :member/alpha3 "CIV" :counterpart "CIV"}
+ {:member "app-itonami-cloud-itonami-iso3166-cmr" :member/alpha3 "CMR" :counterpart "CMR"}
+ {:member "app-itonami-cloud-itonami-iso3166-cod" :member/alpha3 "COD" :counterpart "COD"}
+ {:member "app-itonami-cloud-itonami-iso3166-cog" :member/alpha3 "COG" :counterpart "COG"}
+ {:member "app-itonami-cloud-itonami-iso3166-col" :member/alpha3 "COL" :counterpart "COL"}
+ {:member "app-itonami-cloud-itonami-iso3166-com" :member/alpha3 "COM" :counterpart "COM"}
+ {:member "app-itonami-cloud-itonami-iso3166-cpv" :member/alpha3 "CPV" :counterpart "CPV"}
+ {:member "app-itonami-cloud-itonami-iso3166-cri" :member/alpha3 "CRI" :counterpart "CRI"}
+ {:member "app-itonami-cloud-itonami-iso3166-cub" :member/alpha3 "CUB" :counterpart "CUB"}
+ {:member "app-itonami-cloud-itonami-iso3166-cyp" :member/alpha3 "CYP" :counterpart "CYP"}
+ {:member "app-itonami-cloud-itonami-iso3166-cze" :member/alpha3 "CZE" :counterpart "CZE"}
+ {:member "app-itonami-cloud-itonami-iso3166-deu" :member/alpha3 "DEU" :counterpart "DEU"}
+ {:member "app-itonami-cloud-itonami-iso3166-dji" :member/alpha3 "DJI" :counterpart "DJI"}
+ {:member "app-itonami-cloud-itonami-iso3166-dma" :member/alpha3 "DMA" :counterpart "DMA"}
+ {:member "app-itonami-cloud-itonami-iso3166-dnk" :member/alpha3 "DNK" :counterpart :no-counterpart :reason "catalog gap: no :jurisdiction entry in the committed legislation catalog (not a rename/merge claim)"}
+ {:member "app-itonami-cloud-itonami-iso3166-dom" :member/alpha3 "DOM" :counterpart "DOM"}
+ {:member "app-itonami-cloud-itonami-iso3166-dza" :member/alpha3 "DZA" :counterpart "DZA"}
+ {:member "app-itonami-cloud-itonami-iso3166-ecu" :member/alpha3 "ECU" :counterpart "ECU"}
+ {:member "app-itonami-cloud-itonami-iso3166-egy" :member/alpha3 "EGY" :counterpart "EGY"}
+ {:member "app-itonami-cloud-itonami-iso3166-eri" :member/alpha3 "ERI" :counterpart :no-counterpart :reason "catalog gap: no :jurisdiction entry in the committed legislation catalog (not a rename/merge claim)"}
+ {:member "app-itonami-cloud-itonami-iso3166-esp" :member/alpha3 "ESP" :counterpart "ESP"}
+ {:member "app-itonami-cloud-itonami-iso3166-est" :member/alpha3 "EST" :counterpart "EST"}
+ {:member "app-itonami-cloud-itonami-iso3166-eth" :member/alpha3 "ETH" :counterpart "ETH"}
+ {:member "app-itonami-cloud-itonami-iso3166-fin" :member/alpha3 "FIN" :counterpart "FIN"}
+ {:member "app-itonami-cloud-itonami-iso3166-fji" :member/alpha3 "FJI" :counterpart "FJI"}
+ {:member "app-itonami-cloud-itonami-iso3166-fra" :member/alpha3 "FRA" :counterpart "FRA"}
+ {:member "app-itonami-cloud-itonami-iso3166-fsm" :member/alpha3 "FSM" :counterpart "FSM"}
+ {:member "app-itonami-cloud-itonami-iso3166-gab" :member/alpha3 "GAB" :counterpart "GAB"}
+ {:member "app-itonami-cloud-itonami-iso3166-gbr" :member/alpha3 "GBR" :counterpart "GBR"}
+ {:member "app-itonami-cloud-itonami-iso3166-geo" :member/alpha3 "GEO" :counterpart "GEO"}
+ {:member "app-itonami-cloud-itonami-iso3166-gha" :member/alpha3 "GHA" :counterpart "GHA"}
+ {:member "app-itonami-cloud-itonami-iso3166-gin" :member/alpha3 "GIN" :counterpart "GIN"}
+ {:member "app-itonami-cloud-itonami-iso3166-gmb" :member/alpha3 "GMB" :counterpart "GMB"}
+ {:member "app-itonami-cloud-itonami-iso3166-gnb" :member/alpha3 "GNB" :counterpart "GNB"}
+ {:member "app-itonami-cloud-itonami-iso3166-gnq" :member/alpha3 "GNQ" :counterpart "GNQ"}
+ {:member "app-itonami-cloud-itonami-iso3166-grc" :member/alpha3 "GRC" :counterpart "GRC"}
+ {:member "app-itonami-cloud-itonami-iso3166-grd" :member/alpha3 "GRD" :counterpart "GRD"}
+ {:member "app-itonami-cloud-itonami-iso3166-gtm" :member/alpha3 "GTM" :counterpart "GTM"}
+ {:member "app-itonami-cloud-itonami-iso3166-guy" :member/alpha3 "GUY" :counterpart "GUY"}
+ {:member "app-itonami-cloud-itonami-iso3166-hnd" :member/alpha3 "HND" :counterpart "HND"}
+ {:member "app-itonami-cloud-itonami-iso3166-hrv" :member/alpha3 "HRV" :counterpart "HRV"}
+ {:member "app-itonami-cloud-itonami-iso3166-hti" :member/alpha3 "HTI" :counterpart "HTI"}
+ {:member "app-itonami-cloud-itonami-iso3166-hun" :member/alpha3 "HUN" :counterpart "HUN"}
+ {:member "app-itonami-cloud-itonami-iso3166-idn" :member/alpha3 "IDN" :counterpart "IDN"}
+ {:member "app-itonami-cloud-itonami-iso3166-ind" :member/alpha3 "IND" :counterpart "IND"}
+ {:member "app-itonami-cloud-itonami-iso3166-ind-clean-air" :member/alpha3 "IND" :counterpart "IND" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-irl" :member/alpha3 "IRL" :counterpart "IRL"}
+ {:member "app-itonami-cloud-itonami-iso3166-irq" :member/alpha3 "IRQ" :counterpart "IRQ"}
+ {:member "app-itonami-cloud-itonami-iso3166-isl" :member/alpha3 "ISL" :counterpart "ISL"}
+ {:member "app-itonami-cloud-itonami-iso3166-isr" :member/alpha3 "ISR" :counterpart "ISR"}
+ {:member "app-itonami-cloud-itonami-iso3166-ita" :member/alpha3 "ITA" :counterpart "ITA"}
+ {:member "app-itonami-cloud-itonami-iso3166-jam" :member/alpha3 "JAM" :counterpart "JAM"}
+ {:member "app-itonami-cloud-itonami-iso3166-jor" :member/alpha3 "JOR" :counterpart "JOR"}
+ {:member "app-itonami-cloud-itonami-iso3166-jpn" :member/alpha3 "JPN" :counterpart "JPN"}
+ {:member "app-itonami-cloud-itonami-iso3166-jpn-audit" :member/alpha3 "JPN" :counterpart "JPN" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-jpn-cao" :member/alpha3 "JPN" :counterpart "JPN" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-jpn-digital" :member/alpha3 "JPN" :counterpart "JPN" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-jpn-fsa" :member/alpha3 "JPN" :counterpart "JPN" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-jpn-jftc" :member/alpha3 "JPN" :counterpart "JPN" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-jpn-maff" :member/alpha3 "JPN" :counterpart "JPN" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-jpn-meti" :member/alpha3 "JPN" :counterpart "JPN" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-jpn-mext" :member/alpha3 "JPN" :counterpart "JPN" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-jpn-mhlw" :member/alpha3 "JPN" :counterpart "JPN" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-jpn-mic" :member/alpha3 "JPN" :counterpart "JPN" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-jpn-mlit" :member/alpha3 "JPN" :counterpart "JPN" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-jpn-mod" :member/alpha3 "JPN" :counterpart "JPN" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-jpn-moe" :member/alpha3 "JPN" :counterpart "JPN" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-jpn-mof" :member/alpha3 "JPN" :counterpart "JPN" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-jpn-mofa" :member/alpha3 "JPN" :counterpart "JPN" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-jpn-moj" :member/alpha3 "JPN" :counterpart "JPN" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-jpn-ppc" :member/alpha3 "JPN" :counterpart "JPN" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-jpn-reconstruction" :member/alpha3 "JPN" :counterpart "JPN" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-jpn-statistics" :member/alpha3 "JPN" :counterpart "JPN" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-kaz" :member/alpha3 "KAZ" :counterpart "KAZ"}
+ {:member "app-itonami-cloud-itonami-iso3166-ken" :member/alpha3 "KEN" :counterpart "KEN"}
+ {:member "app-itonami-cloud-itonami-iso3166-kgz" :member/alpha3 "KGZ" :counterpart "KGZ"}
+ {:member "app-itonami-cloud-itonami-iso3166-khm" :member/alpha3 "KHM" :counterpart "KHM"}
+ {:member "app-itonami-cloud-itonami-iso3166-kir" :member/alpha3 "KIR" :counterpart "KIR"}
+ {:member "app-itonami-cloud-itonami-iso3166-kna" :member/alpha3 "KNA" :counterpart "KNA"}
+ {:member "app-itonami-cloud-itonami-iso3166-kor" :member/alpha3 "KOR" :counterpart "KOR"}
+ {:member "app-itonami-cloud-itonami-iso3166-kwt" :member/alpha3 "KWT" :counterpart "KWT"}
+ {:member "app-itonami-cloud-itonami-iso3166-lao" :member/alpha3 "LAO" :counterpart "LAO"}
+ {:member "app-itonami-cloud-itonami-iso3166-lbn" :member/alpha3 "LBN" :counterpart "LBN"}
+ {:member "app-itonami-cloud-itonami-iso3166-lbr" :member/alpha3 "LBR" :counterpart "LBR"}
+ {:member "app-itonami-cloud-itonami-iso3166-lby" :member/alpha3 "LBY" :counterpart "LBY"}
+ {:member "app-itonami-cloud-itonami-iso3166-lca" :member/alpha3 "LCA" :counterpart "LCA"}
+ {:member "app-itonami-cloud-itonami-iso3166-lie" :member/alpha3 "LIE" :counterpart "LIE"}
+ {:member "app-itonami-cloud-itonami-iso3166-lka" :member/alpha3 "LKA" :counterpart "LKA"}
+ {:member "app-itonami-cloud-itonami-iso3166-lso" :member/alpha3 "LSO" :counterpart "LSO"}
+ {:member "app-itonami-cloud-itonami-iso3166-ltu" :member/alpha3 "LTU" :counterpart "LTU"}
+ {:member "app-itonami-cloud-itonami-iso3166-lux" :member/alpha3 "LUX" :counterpart "LUX"}
+ {:member "app-itonami-cloud-itonami-iso3166-lva" :member/alpha3 "LVA" :counterpart "LVA"}
+ {:member "app-itonami-cloud-itonami-iso3166-mar" :member/alpha3 "MAR" :counterpart "MAR"}
+ {:member "app-itonami-cloud-itonami-iso3166-mco" :member/alpha3 "MCO" :counterpart "MCO"}
+ {:member "app-itonami-cloud-itonami-iso3166-mda" :member/alpha3 "MDA" :counterpart "MDA"}
+ {:member "app-itonami-cloud-itonami-iso3166-mdg" :member/alpha3 "MDG" :counterpart "MDG"}
+ {:member "app-itonami-cloud-itonami-iso3166-mdv" :member/alpha3 "MDV" :counterpart "MDV"}
+ {:member "app-itonami-cloud-itonami-iso3166-mex" :member/alpha3 "MEX" :counterpart "MEX"}
+ {:member "app-itonami-cloud-itonami-iso3166-mhl" :member/alpha3 "MHL" :counterpart "MHL"}
+ {:member "app-itonami-cloud-itonami-iso3166-mkd" :member/alpha3 "MKD" :counterpart "MKD"}
+ {:member "app-itonami-cloud-itonami-iso3166-mli" :member/alpha3 "MLI" :counterpart "MLI"}
+ {:member "app-itonami-cloud-itonami-iso3166-mlt" :member/alpha3 "MLT" :counterpart "MLT"}
+ {:member "app-itonami-cloud-itonami-iso3166-mmr" :member/alpha3 "MMR" :counterpart "MMR"}
+ {:member "app-itonami-cloud-itonami-iso3166-mne" :member/alpha3 "MNE" :counterpart "MNE"}
+ {:member "app-itonami-cloud-itonami-iso3166-mng" :member/alpha3 "MNG" :counterpart "MNG"}
+ {:member "app-itonami-cloud-itonami-iso3166-moz" :member/alpha3 "MOZ" :counterpart "MOZ"}
+ {:member "app-itonami-cloud-itonami-iso3166-mrt" :member/alpha3 "MRT" :counterpart "MRT"}
+ {:member "app-itonami-cloud-itonami-iso3166-mus" :member/alpha3 "MUS" :counterpart "MUS"}
+ {:member "app-itonami-cloud-itonami-iso3166-mwi" :member/alpha3 "MWI" :counterpart "MWI"}
+ {:member "app-itonami-cloud-itonami-iso3166-mys" :member/alpha3 "MYS" :counterpart "MYS"}
+ {:member "app-itonami-cloud-itonami-iso3166-nam" :member/alpha3 "NAM" :counterpart "NAM"}
+ {:member "app-itonami-cloud-itonami-iso3166-ner" :member/alpha3 "NER" :counterpart :no-counterpart :reason "catalog gap: no :jurisdiction entry in the committed legislation catalog (not a rename/merge claim)"}
+ {:member "app-itonami-cloud-itonami-iso3166-nga" :member/alpha3 "NGA" :counterpart "NGA"}
+ {:member "app-itonami-cloud-itonami-iso3166-nic" :member/alpha3 "NIC" :counterpart "NIC"}
+ {:member "app-itonami-cloud-itonami-iso3166-nld" :member/alpha3 "NLD" :counterpart :no-counterpart :reason "catalog gap: no :jurisdiction entry in the committed legislation catalog (not a rename/merge claim)"}
+ {:member "app-itonami-cloud-itonami-iso3166-nor" :member/alpha3 "NOR" :counterpart "NOR"}
+ {:member "app-itonami-cloud-itonami-iso3166-npl" :member/alpha3 "NPL" :counterpart "NPL"}
+ {:member "app-itonami-cloud-itonami-iso3166-nru" :member/alpha3 "NRU" :counterpart "NRU"}
+ {:member "app-itonami-cloud-itonami-iso3166-nzl" :member/alpha3 "NZL" :counterpart "NZL"}
+ {:member "app-itonami-cloud-itonami-iso3166-omn" :member/alpha3 "OMN" :counterpart "OMN"}
+ {:member "app-itonami-cloud-itonami-iso3166-pak" :member/alpha3 "PAK" :counterpart "PAK"}
+ {:member "app-itonami-cloud-itonami-iso3166-pan" :member/alpha3 "PAN" :counterpart "PAN"}
+ {:member "app-itonami-cloud-itonami-iso3166-per" :member/alpha3 "PER" :counterpart "PER"}
+ {:member "app-itonami-cloud-itonami-iso3166-phl" :member/alpha3 "PHL" :counterpart "PHL"}
+ {:member "app-itonami-cloud-itonami-iso3166-plw" :member/alpha3 "PLW" :counterpart "PLW"}
+ {:member "app-itonami-cloud-itonami-iso3166-png" :member/alpha3 "PNG" :counterpart "PNG"}
+ {:member "app-itonami-cloud-itonami-iso3166-pol" :member/alpha3 "POL" :counterpart "POL"}
+ {:member "app-itonami-cloud-itonami-iso3166-prt" :member/alpha3 "PRT" :counterpart "PRT"}
+ {:member "app-itonami-cloud-itonami-iso3166-pry" :member/alpha3 "PRY" :counterpart "PRY"}
+ {:member "app-itonami-cloud-itonami-iso3166-qat" :member/alpha3 "QAT" :counterpart "QAT"}
+ {:member "app-itonami-cloud-itonami-iso3166-rou" :member/alpha3 "ROU" :counterpart "ROU"}
+ {:member "app-itonami-cloud-itonami-iso3166-rus" :member/alpha3 "RUS" :counterpart "RUS"}
+ {:member "app-itonami-cloud-itonami-iso3166-rwa" :member/alpha3 "RWA" :counterpart "RWA"}
+ {:member "app-itonami-cloud-itonami-iso3166-sau" :member/alpha3 "SAU" :counterpart "SAU"}
+ {:member "app-itonami-cloud-itonami-iso3166-sdn" :member/alpha3 "SDN" :counterpart "SDN"}
+ {:member "app-itonami-cloud-itonami-iso3166-sen" :member/alpha3 "SEN" :counterpart "SEN"}
+ {:member "app-itonami-cloud-itonami-iso3166-sgp" :member/alpha3 "SGP" :counterpart "SGP"}
+ {:member "app-itonami-cloud-itonami-iso3166-slb" :member/alpha3 "SLB" :counterpart "SLB"}
+ {:member "app-itonami-cloud-itonami-iso3166-sle" :member/alpha3 "SLE" :counterpart "SLE"}
+ {:member "app-itonami-cloud-itonami-iso3166-slv" :member/alpha3 "SLV" :counterpart "SLV"}
+ {:member "app-itonami-cloud-itonami-iso3166-smr" :member/alpha3 "SMR" :counterpart "SMR"}
+ {:member "app-itonami-cloud-itonami-iso3166-som" :member/alpha3 "SOM" :counterpart "SOM"}
+ {:member "app-itonami-cloud-itonami-iso3166-srb" :member/alpha3 "SRB" :counterpart "SRB"}
+ {:member "app-itonami-cloud-itonami-iso3166-ssd" :member/alpha3 "SSD" :counterpart "SSD"}
+ {:member "app-itonami-cloud-itonami-iso3166-stp" :member/alpha3 "STP" :counterpart "STP"}
+ {:member "app-itonami-cloud-itonami-iso3166-sur" :member/alpha3 "SUR" :counterpart "SUR"}
+ {:member "app-itonami-cloud-itonami-iso3166-svk" :member/alpha3 "SVK" :counterpart "SVK"}
+ {:member "app-itonami-cloud-itonami-iso3166-svn" :member/alpha3 "SVN" :counterpart "SVN"}
+ {:member "app-itonami-cloud-itonami-iso3166-swe" :member/alpha3 "SWE" :counterpart "SWE"}
+ {:member "app-itonami-cloud-itonami-iso3166-swz" :member/alpha3 "SWZ" :counterpart "SWZ"}
+ {:member "app-itonami-cloud-itonami-iso3166-syc" :member/alpha3 "SYC" :counterpart "SYC"}
+ {:member "app-itonami-cloud-itonami-iso3166-tcd" :member/alpha3 "TCD" :counterpart "TCD"}
+ {:member "app-itonami-cloud-itonami-iso3166-tgo" :member/alpha3 "TGO" :counterpart "TGO"}
+ {:member "app-itonami-cloud-itonami-iso3166-tha" :member/alpha3 "THA" :counterpart "THA"}
+ {:member "app-itonami-cloud-itonami-iso3166-tjk" :member/alpha3 "TJK" :counterpart "TJK"}
+ {:member "app-itonami-cloud-itonami-iso3166-tkm" :member/alpha3 "TKM" :counterpart "TKM"}
+ {:member "app-itonami-cloud-itonami-iso3166-tls" :member/alpha3 "TLS" :counterpart "TLS"}
+ {:member "app-itonami-cloud-itonami-iso3166-ton" :member/alpha3 "TON" :counterpart "TON"}
+ {:member "app-itonami-cloud-itonami-iso3166-tto" :member/alpha3 "TTO" :counterpart "TTO"}
+ {:member "app-itonami-cloud-itonami-iso3166-tun" :member/alpha3 "TUN" :counterpart "TUN"}
+ {:member "app-itonami-cloud-itonami-iso3166-tur" :member/alpha3 "TUR" :counterpart "TUR"}
+ {:member "app-itonami-cloud-itonami-iso3166-tuv" :member/alpha3 "TUV" :counterpart "TUV"}
+ {:member "app-itonami-cloud-itonami-iso3166-tza" :member/alpha3 "TZA" :counterpart "TZA"}
+ {:member "app-itonami-cloud-itonami-iso3166-uga" :member/alpha3 "UGA" :counterpart "UGA"}
+ {:member "app-itonami-cloud-itonami-iso3166-ukr" :member/alpha3 "UKR" :counterpart "UKR"}
+ {:member "app-itonami-cloud-itonami-iso3166-ury" :member/alpha3 "URY" :counterpart "URY"}
+ {:member "app-itonami-cloud-itonami-iso3166-usa" :member/alpha3 "USA" :counterpart "USA"}
+ {:member "app-itonami-cloud-itonami-iso3166-usa-dhs" :member/alpha3 "USA" :counterpart "USA" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-usa-doc" :member/alpha3 "USA" :counterpart "USA" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-usa-dod" :member/alpha3 "USA" :counterpart "USA" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-usa-doe" :member/alpha3 "USA" :counterpart "USA" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-usa-dol" :member/alpha3 "USA" :counterpart "USA" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-usa-dot" :member/alpha3 "USA" :counterpart "USA" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-usa-epa" :member/alpha3 "USA" :counterpart "USA" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-usa-fcc" :member/alpha3 "USA" :counterpart "USA" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-usa-ftc" :member/alpha3 "USA" :counterpart "USA" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-usa-gsa" :member/alpha3 "USA" :counterpart "USA" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-usa-hhs" :member/alpha3 "USA" :counterpart "USA" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-usa-sba" :member/alpha3 "USA" :counterpart "USA" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-usa-sec" :member/alpha3 "USA" :counterpart "USA" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-usa-treasury" :member/alpha3 "USA" :counterpart "USA" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-usa-va" :member/alpha3 "USA" :counterpart "USA" :scope :sub-repo :note "agency/topic-scoped sub-repo; counterpart is the base-country jurisdiction"}
+ {:member "app-itonami-cloud-itonami-iso3166-uzb" :member/alpha3 "UZB" :counterpart "UZB"}
+ {:member "app-itonami-cloud-itonami-iso3166-vct" :member/alpha3 "VCT" :counterpart "VCT"}
+ {:member "app-itonami-cloud-itonami-iso3166-vnm" :member/alpha3 "VNM" :counterpart "VNM"}
+ {:member "app-itonami-cloud-itonami-iso3166-vut" :member/alpha3 "VUT" :counterpart "VUT"}
+ {:member "app-itonami-cloud-itonami-iso3166-wsm" :member/alpha3 "WSM" :counterpart "WSM"}
+ {:member "app-itonami-cloud-itonami-iso3166-yem" :member/alpha3 "YEM" :counterpart "YEM"}
+ {:member "app-itonami-cloud-itonami-iso3166-zaf" :member/alpha3 "ZAF" :counterpart "ZAF"}
+ {:member "app-itonami-cloud-itonami-iso3166-zmb" :member/alpha3 "ZMB" :counterpart "ZMB"}
+ {:member "app-itonami-cloud-itonami-iso3166-zwe" :member/alpha3 "ZWE" :counterpart "ZWE"}]}
