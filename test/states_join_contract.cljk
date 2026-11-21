@@ -1,0 +1,131 @@
+;; AWAI-3630 contract for coverage/external-joins.edn
+;; (:join/states-country-directories).
+;;
+;; The join declares how this catalog's :jurisdiction/code values meet the
+;; country directories of network-awai/app-itonami-states (data/gov/). This
+;; contract pins the declaration (id, repository, revision, keys, filter,
+;; rule) and re-derives everything derivable without a states checkout from
+;; data/datascript-tx.edn: the by-kind counts and the national set. The
+;; remote-side numbers (directory count, matched, unmatched lists) are
+;; re-derived by bin/verify-states-join.cljk when given a checkout; here they
+;; are checked for internal consistency only.
+;;
+;; Kind is taken from :jurisdiction/kind only: no code is judged a country by
+;; shape. COE, ICC and ICJ are three capital letters and are not countries.
+(require '[clojure.edn :as edn]
+         '[clojure.set :as set]
+         '[clojure.string :as str])
+
+(let [join-path "coverage/external-joins.edn"
+      src-path "data/datascript-tx.edn"
+      joins (:coverage/external-joins (edn/read-string (slurp join-path)))
+      _ (assert (vector? joins) (str join-path " holds no :coverage/external-joins vector"))
+      entry (first (filter #(= :join/states-country-directories (:join/id %)) joins))
+      _ (assert entry (str join-path " declares no :join/states-country-directories"))
+      _ (assert (= 1 (count (filter #(= :join/states-country-directories (:join/id %)) joins)))
+               "duplicate :join/states-country-directories entries")
+      tx (edn/read-string (slurp src-path))
+      jur (filter #(contains? % :jurisdiction/code) tx)
+      by-kind (into (sorted-map) (frequencies (map :jurisdiction/kind jur)))
+      national (set (map :jurisdiction/code
+                         (filter #(= :national (:jurisdiction/kind %)) jur)))
+      measured (:join/measured entry)]
+
+  ;; The declaration itself.
+  (assert (= "network-awai/app-itonami-states" (:join/repository entry))
+          (str "join repository drifted: " (pr-str (:join/repository entry))))
+  (assert (= "f7ab426dd61ecac135af14535528d27a90b0b990" (:join/revision entry))
+          (str "join revision drifted: " (pr-str (:join/revision entry))))
+  (assert (re-matches #"[0-9a-f]{40}" (str (:join/revision entry)))
+          "join revision is not a 40-hex sha")
+  (assert (= "data/gov" (:join/directory entry))
+          (str "join directory drifted: " (pr-str (:join/directory entry))))
+  (assert (= :jurisdiction/code (:join/local-key entry))
+          (str "local key drifted: " (pr-str (:join/local-key entry))))
+  (assert (= {:jurisdiction/kind :national} (:join/local-filter entry))
+          (str "local filter drifted: " (pr-str (:join/local-filter entry))))
+  (assert (= :directory-name (:join/remote-key entry))
+          (str "remote key drifted: " (pr-str (:join/remote-key entry))))
+  (assert (and (string? (:join/rule entry)) (not (str/blank? (:join/rule entry))))
+          "join rule is missing")
+
+  ;; The pin lives here, not in sources.lock.edn (which only pins build
+  ;; inputs). If a future edit wires the pin into the lock, this contract
+  ;; must be revisited deliberately, not drifted into.
+  (let [lock (edn/read-string (slurp "sources.lock.edn"))
+        locked-ids (set (map :join/id (concat (:joins lock) (:joins-unwired lock))))]
+    (assert (not (contains? locked-ids :join/states-country-directories))
+            "sources.lock.edn must not pin :join/states-country-directories; the pin lives in coverage/external-joins.edn"))
+
+  ;; Positive: the committed local-side values are exactly the rebuild.
+  (assert (= by-kind (:local-jurisdictions-by-kind measured))
+          (str "by-kind drifted: measured " (pr-str by-kind)))
+  (assert (= (count national) (:local-national measured))
+          (str "local national count drifted: measured " (count national)))
+
+  ;; Kind, not shape, decides. Three capital letters prove nothing.
+  (doseq [code ["COE" "ICC" "ICJ"]]
+    (let [kinds (set (map :jurisdiction/kind
+                           (filter #(= code (:jurisdiction/code %)) jur)))]
+      (assert (= 1 (count kinds))
+              (str code " has no single jurisdiction kind: " (pr-str kinds)))
+      (assert (not (contains? kinds :national))
+              (str code " is kind " (pr-str kinds) ", not :national"))
+      (assert (not (contains? national code))
+              (str code " leaked into the national join set"))))
+
+  ;; Internal consistency of the committed remote-side values: every remote
+  ;; directory is either matched or remote-unmatched, and every national
+  ;; code is either matched or local-national-unmatched. No alias is claimed.
+  (let [remote-unmatched (:remote-unmatched measured)
+        local-unmatched (:local-national-unmatched measured)]
+    (assert (= (:remote-directories measured)
+               (+ (:matched measured) (count remote-unmatched)))
+            "matched + remote-unmatched != remote-directories")
+    (assert (= (:local-national measured)
+               (+ (:matched measured) (count local-unmatched)))
+            "matched + local-national-unmatched != local-national")
+    (assert (= (vec (sort remote-unmatched)) (vec remote-unmatched))
+            "remote-unmatched is not sorted")
+    (assert (= (count remote-unmatched) (count (set remote-unmatched)))
+            "remote-unmatched holds duplicates")
+    (assert (every? #(not (contains? national %)) remote-unmatched)
+            "remote-unmatched names a national code: an alias is being claimed")
+    (assert (every? string? remote-unmatched)
+            "remote-unmatched holds a non-string")
+    (assert (every? #(contains? (set remote-unmatched) %) (:remote-not-three-letter measured))
+            "a not-three-letter name is missing from remote-unmatched")
+    (assert (= (vec (sort local-unmatched)) (vec local-unmatched))
+            "local-national-unmatched is not sorted"))
+
+  ;; Negative (a): the registered matched count changed by one must break
+  ;; the consistency the verifier checks.
+  (let [tampered (update measured :matched inc)]
+    (assert (not= (:matched measured) (:matched tampered))
+            "matched changed by one was not detected")
+    (assert (not= (:remote-directories tampered)
+                  (+ (:matched tampered) (count (:remote-unmatched tampered))))
+            "tampered matched count still consistent with remote-directories"))
+
+  ;; Negative (b): dropping the kind filter changes the join set -- the
+  ;; unfiltered code set admits the non-national codes the filter excludes.
+  (let [unfiltered (set (map :jurisdiction/code jur))
+        leaked (set/difference unfiltered national)]
+    (assert (= #{"ACHPR" "COE" "EU" "IACHR" "ICC" "ICJ" "ITLOS" "UN" "WTOAB"} leaked)
+            (str "unfiltered join set leaked an unexpected set: " (pr-str leaked)))
+    (assert (not= unfiltered national)
+            "dropping the kind filter left the join set unchanged"))
+
+  ;; Negative (c): a non-40-hex revision fails the pin predicate.
+  (doseq [bad ["f7ab426" "F7AB426DD61ECAC135AF14535528D27A90B0B990"
+               "g7ab426dd61ecac135af14535528d27a90b0b990" "" nil 123]]
+    (assert (not (re-matches #"[0-9a-f]{40}" (str bad)))
+            (str "bad revision passed the pin predicate: " (pr-str bad))))
+
+  (println {:status :ok
+            :join :join/states-country-directories
+            :by-kind by-kind
+            :local-national (count national)
+            :remote-directories (:remote-directories measured)
+            :matched (:matched measured)
+            :negative-controls :all-detected}))

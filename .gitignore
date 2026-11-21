@@ -3,3 +3,7 @@ node_modules/
 
 # nbb dependency cache -- a build artifact, not source
 .nbb/
+
+# throwaway checkouts of joined repositories (bin/verify-states-join.cljk takes
+# the checkout path as an argument; the delivery test clones here)
+.joins/

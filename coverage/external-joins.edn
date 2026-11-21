@@ -1,0 +1,34 @@
+;; AWAI-3630: joins from this catalog to country directories held elsewhere.
+;;
+;; This file declares `:jurisdiction/code` joins against checkouts this
+;; repository never vendors. It is NOT part of the bin/build.cljk pipeline
+;; and it is NOT read from coverage/registry.edn: the registry stays a
+;; hand-maintained family-coverage overview, and the pin lives here (never in
+;; sources.lock.edn, which only pins build inputs).
+;;
+;; Each entry joins by exact string match only. No alias claim is made: a
+;; remote name that matches nothing joins nothing, and whether a code is a
+;; country is decided by `:jurisdiction/kind` alone -- never by shape. COE,
+;; ICC and ICJ are three capital letters and are not countries.
+{:coverage/external-joins
+ [{:join/id :join/states-country-directories
+   :join/repository "network-awai/app-itonami-states"
+   :join/revision "f7ab426dd61ecac135af14535528d27a90b0b990"
+   :join/directory "data/gov"
+   :join/local-key :jurisdiction/code
+   ;; Only national jurisdictions are joined. The catalog also holds
+   ;; supranational bodies (COE, EU, UN) and international courts (ACHPR,
+   ;; IACHR, ICC, ICJ, ITLOS, WTOAB); the shape of a code does not tell a
+   ;; country from a court, so the filter below is the whole decision.
+   :join/local-filter {:jurisdiction/kind :national}
+   ;; Not an attribute: the basename of each directory directly under
+   ;; data/gov/, compared upper-cased, exact string only.
+   :join/remote-key :directory-name
+   :join/rule "ディレクトリ名を大文字化した文字列と、:jurisdiction/kind が :national の行の :jurisdiction/code との完全一致だけで結合する。名称や別表記からの推定結合は行わない（remote の ARU・XKX・0・INTL は local の何にも結合しない。COE・ICC・ICJ は三文字でも国ではないので結合しない）。"
+   :join/measured {:local-jurisdictions-by-kind {:international-court 6, :national 189, :supranational 3}
+                   :local-national 189
+                   :remote-directories 203
+                   :remote-not-three-letter ["0" "INTL"]
+                   :matched 189
+                   :local-national-unmatched []
+                   :remote-unmatched ["0" "ARU" "DNK" "ERI" "GUM" "HKG" "INTL" "MNP" "NER" "NLD" "PRI" "PSE" "TWN" "XKX"]}}]}
