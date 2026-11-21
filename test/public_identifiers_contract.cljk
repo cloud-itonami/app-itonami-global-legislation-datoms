@@ -1,0 +1,139 @@
+;; AWAI-3621 contract for coverage/public-identifiers.edn.
+;;
+;; The table is derived only from data/datascript-tx.edn: one row per
+;; :jurisdiction/code with the jurisdiction's kind and the Wikidata identifiers
+;; already present on that jurisdiction's legislatures and courts. This test
+;; rebuilds that table in memory and pins the committed file to the rebuild,
+;; including the header sha256 and counts. The negative cases mirror the ones
+;; bin/verify-public-identifiers.cljk must fail on: (a) one committed Wikidata
+;; value changed, (b) one row removed, (c) a malformed Wikidata value.
+(require '[clojure.edn :as edn]
+         '[clojure.set :as set]
+         '[clojure.string :as str])
+(import '[java.security MessageDigest])
+
+(defn sha256-hex [bytes]
+  (let [d (MessageDigest/getInstance "SHA-256")]
+    (str/join (map #(format "%02x" (bit-and % 0xff)) (.digest d bytes)))))
+
+(defn read-file-bytes [p]
+  (let [f (java.io.File. ^String p)
+        buf (byte-array (.length f))]
+    (with-open [in (java.io.FileInputStream. f)]
+      (.read in buf))
+    buf))
+
+(defn wellformed-wikidata? [v]
+  (and (string? v) (boolean (re-matches #"Q[0-9]+" v))))
+
+(let [src-path "data/datascript-tx.edn"
+      table-path "coverage/public-identifiers.edn"
+      src-bytes (read-file-bytes src-path)
+      actual-sha256 (sha256-hex src-bytes)
+      tx (edn/read-string (String. ^bytes src-bytes "UTF-8"))
+      table (edn/read-string (slurp table-path))
+      jur (filter #(contains? % :jurisdiction/code) tx)
+      leg (filter #(contains? % :legislature/id) tx)
+      crt (filter #(contains? % :court/id) tx)
+      leg-by-jur (group-by :legislature/jurisdiction leg)
+      crt-by-jur (group-by :court/jurisdiction crt)
+      entries (fn [code by-jur id-k wd-k]
+                (mapv (fn [e] {id-k (get e id-k) wd-k (get e wd-k)})
+                      (sort-by id-k (get by-jur code []))))
+      expected-rows
+      (mapv (fn [j]
+              (let [code (:jurisdiction/code j)]
+                {:jurisdiction/code code
+                 :jurisdiction/kind (:jurisdiction/kind j)
+                 :legislature/wikidata (entries code leg-by-jur :legislature/id :legislature/wikidata)
+                 :court/wikidata (entries code crt-by-jur :court/id :court/wikidata)}))
+            (sort-by :jurisdiction/code jur))
+      with-wd? (fn [row] (boolean (or (seq (:legislature/wikidata row))
+                                      (seq (:court/wikidata row)))))
+      expected-counts
+      {:jurisdictions/total (count jur)
+       :jurisdictions/by-kind (into (sorted-map) (frequencies (map :jurisdiction/kind jur)))
+       :jurisdictions/with-wikidata (count (filter with-wd? expected-rows))
+       :jurisdictions/without-wikidata (count (remove with-wd? expected-rows))
+       :legislatures/with-wikidata (count (filter :legislature/wikidata leg))
+       :legislatures/without-wikidata (count (remove :legislature/wikidata leg))
+       :courts/with-wikidata (count (filter :court/wikidata crt))
+       :courts/without-wikidata (count (remove :court/wikidata crt))}
+      committed-rows (:public-identifiers/rows table)]
+
+  ;; Positive: the committed table is exactly the in-memory rebuild.
+  (assert (= 198 (count jur))
+          (str "jurisdiction reference table unexpectedly changed size: " (count jur)))
+  (assert (= (count jur) (count committed-rows))
+          (str "row count " (count committed-rows)
+               " != :jurisdiction/code entity count " (count jur)))
+  (assert (= expected-rows committed-rows)
+          "coverage/public-identifiers.edn rows drifted from data/datascript-tx.edn")
+  (assert (= actual-sha256 (:public-identifiers/source-sha256 table))
+          (str "header sha256 " (:public-identifiers/source-sha256 table)
+               " != " src-path " bytes " actual-sha256))
+  (assert (= expected-counts (:public-identifiers/counts table))
+          (str "header counts drifted from measured counts: "
+               (pr-str (:public-identifiers/counts table))))
+
+  ;; Every entry is traceable: its id and wikidata match the catalog entity.
+  (let [leg-by-id (into {} (map (juxt :legislature/id identity) leg))
+        crt-by-id (into {} (map (juxt :court/id identity) crt))]
+    (doseq [row committed-rows
+            e (:legislature/wikidata row)]
+      (assert (= (:legislature/wikidata e)
+                 (:legislature/wikidata (get leg-by-id (:legislature/id e))))
+              (str "untraceable legislature entry " (pr-str e))))
+    (doseq [row committed-rows
+            e (:court/wikidata row)]
+      (assert (= (:court/wikidata e)
+                 (:court/wikidata (get crt-by-id (:court/id e))))
+              (str "untraceable court entry " (pr-str e)))))
+
+  ;; Format: every Wikidata value is Q followed by digits.
+  (doseq [row committed-rows
+          v (concat (map :legislature/wikidata (:legislature/wikidata row))
+                    (map :court/wikidata (:court/wikidata row)))]
+    (assert (wellformed-wikidata? v)
+            (str "malformed Wikidata value in committed table: " (pr-str v))))
+
+  ;; One Wikidata identifier, one jurisdiction.
+  (let [holders (concat (map (fn [e] [(:legislature/wikidata e) (:legislature/jurisdiction e)])
+                             (filter :legislature/wikidata leg))
+                        (map (fn [e] [(:court/wikidata e) (:court/jurisdiction e)])
+                             (filter :court/wikidata crt)))
+        dups (filter (fn [[_ hs]] (> (count (distinct (map second hs))) 1))
+                     (group-by first holders))]
+    (assert (empty? dups)
+            (str "Wikidata identifier shared across jurisdictions: " (pr-str dups))))
+
+  ;; Negative (a): one committed Wikidata value changed must break equality.
+  (let [row-idx (first (keep-indexed (fn [i r] (when (seq (:legislature/wikidata r)) i))
+                                     committed-rows))
+        mutated (assoc-in committed-rows [row-idx :legislature/wikidata 0 :legislature/wikidata] "Q1")]
+    (assert (not= expected-rows mutated)
+            "changed Wikidata value was not detected"))
+
+  ;; Negative (b): one row removed must break the count and the equality.
+  (let [dropped (vec (rest committed-rows))]
+    (assert (not= (count expected-rows) (count dropped))
+            "removed row was not detected by count")
+    (assert (not= expected-rows dropped)
+            "removed row was not detected by equality")
+    (assert (= #{(:jurisdiction/code (first committed-rows))}
+               (set/difference (set (map :jurisdiction/code expected-rows))
+                               (set (map :jurisdiction/code dropped))))
+            "removed row was not the one detected"))
+
+  ;; Negative (c): malformed values fail the Q-plus-digits predicate.
+  (doseq [bad ["Q" "X123" "q123" "Q12A" " Q1" "Q1 " "" nil 123]]
+    (assert (not (wellformed-wikidata? bad))
+            (str "malformed value passed the predicate: " (pr-str bad))))
+  (doseq [good ["Q1" "Q202384" "Q1142255"]]
+    (assert (wellformed-wikidata? good)
+            (str "well-formed value rejected by the predicate: " (pr-str good))))
+
+  (println {:status :ok
+            :rows (count committed-rows)
+            :counts (:public-identifiers/counts table)
+            :negative-controls :all-detected}))

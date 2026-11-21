@@ -1,0 +1,203 @@
+{:public-identifiers/source "data/datascript-tx.edn"
+ :public-identifiers/source-sha256 "7a5b94b3f752deb74b362b62a1a5a1765ea38ae592e5ca917cb3724e3d5bdd3e"
+ :public-identifiers/counts {:jurisdictions/total 198, :jurisdictions/by-kind {:international-court 6, :national 189, :supranational 3}, :jurisdictions/with-wikidata 189, :jurisdictions/without-wikidata 9, :legislatures/with-wikidata 186, :legislatures/without-wikidata 0, :courts/with-wikidata 144, :courts/without-wikidata 0}
+ :public-identifiers/note "Derived only from data/datascript-tx.edn; every value is traceable to a value there. Kind is taken from :jurisdiction/kind only: no code is judged ISO 3166-1 alpha-3 by shape (COE, ICC and ICJ are three capital letters and are not countries). No alias claim is made (e.g. EU is not equated with any other code). ELI is absent at this level of the catalog, so there is no ELI column."
+ :public-identifiers/rows
+ [{:jurisdiction/code "ACHPR", :jurisdiction/kind :international-court, :legislature/wikidata [], :court/wikidata []}
+  {:jurisdiction/code "AFG", :jurisdiction/kind :national, :legislature/wikidata [], :court/wikidata [#:court{:id "court-afg", :wikidata "Q8561"}]}
+  {:jurisdiction/code "AGO", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-ago", :wikidata "Q1969479"}], :court/wikidata []}
+  {:jurisdiction/code "ALB", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-alb", :wikidata "Q1135960"}], :court/wikidata [#:court{:id "court-alb", :wikidata "Q7644871"}]}
+  {:jurisdiction/code "AND", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-and", :wikidata "Q24824"}], :court/wikidata []}
+  {:jurisdiction/code "ARE", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-are", :wikidata "Q5440456"}], :court/wikidata []}
+  {:jurisdiction/code "ARG", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-arg", :wikidata "Q646190"}], :court/wikidata [#:court{:id "court-arg", :wikidata "Q3242421"}]}
+  {:jurisdiction/code "ARM", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-arm", :wikidata "Q1337463"}], :court/wikidata []}
+  {:jurisdiction/code "ATG", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-atg", :wikidata "Q1280751"}], :court/wikidata []}
+  {:jurisdiction/code "AUS", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-aus", :wikidata "Q382118"}], :court/wikidata [#:court{:id "court-aus", :wikidata "Q7645004"}]}
+  {:jurisdiction/code "AUT", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-aut", :wikidata "Q4817650"}], :court/wikidata [#:court{:id "court-aut", :wikidata "Q876935"}]}
+  {:jurisdiction/code "AZE", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-aze", :wikidata "Q330600"}], :court/wikidata [#:court{:id "court-aze", :wikidata "Q12836513"}]}
+  {:jurisdiction/code "BDI", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-bdi", :wikidata "Q7138930"}], :court/wikidata [#:court{:id "court-bdi", :wikidata "Q137095"}]}
+  {:jurisdiction/code "BEL", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-bel", :wikidata "Q1137059"}], :court/wikidata [#:court{:id "court-bel", :wikidata "Q1230309"}]}
+  {:jurisdiction/code "BEN", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-ben", :wikidata "Q1969527"}], :court/wikidata [#:court{:id "court-ben", :wikidata "Q3001098"}]}
+  {:jurisdiction/code "BFA", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-bfa", :wikidata "Q619238"}], :court/wikidata []}
+  {:jurisdiction/code "BGD", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-bgd", :wikidata "Q1684080"}], :court/wikidata [#:court{:id "court-bgd", :wikidata "Q3346963"}]}
+  {:jurisdiction/code "BGR", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-bgr", :wikidata "Q639704"}], :court/wikidata [#:court{:id "court-bgr", :wikidata "Q7644888"}]}
+  {:jurisdiction/code "BHR", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-bhr", :wikidata "Q3242616"}], :court/wikidata [#:court{:id "court-bhr", :wikidata "Q125496459"}]}
+  {:jurisdiction/code "BHS", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-bhs", :wikidata "Q1572486"}], :court/wikidata [#:court{:id "court-bhs", :wikidata "Q7645002"}]}
+  {:jurisdiction/code "BIH", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-bih", :wikidata "Q2604031"}], :court/wikidata [#:court{:id "court-bih", :wikidata "Q113567"}]}
+  {:jurisdiction/code "BLR", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-blr", :wikidata "Q1798607"}], :court/wikidata [#:court{:id "court-blr", :wikidata "Q3001108"}]}
+  {:jurisdiction/code "BLZ", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-blz", :wikidata "Q1965042"}], :court/wikidata [#:court{:id "court-blz", :wikidata "Q7644879"}]}
+  {:jurisdiction/code "BOL", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-bol", :wikidata "Q1968458"}], :court/wikidata [#:court{:id "court-bol", :wikidata "Q2999600"}]}
+  {:jurisdiction/code "BRA", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-bra", :wikidata "Q949699"}], :court/wikidata [#:court{:id "court-bra", :wikidata "Q519138"}]}
+  {:jurisdiction/code "BRB", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-brb", :wikidata "Q2565909"}], :court/wikidata [#:court{:id "court-brb", :wikidata "Q7644922"}]}
+  {:jurisdiction/code "BRN", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-brn", :wikidata "Q2396996"}], :court/wikidata [#:court{:id "court-brn", :wikidata "Q85804255"}]}
+  {:jurisdiction/code "BTN", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-btn", :wikidata "Q2080399"}], :court/wikidata [#:court{:id "court-btn", :wikidata "Q7644880"}]}
+  {:jurisdiction/code "BWA", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-bwa", :wikidata "Q859658"}], :court/wikidata []}
+  {:jurisdiction/code "CAF", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-caf", :wikidata "Q1577158"}], :court/wikidata []}
+  {:jurisdiction/code "CAN", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-can", :wikidata "Q475689"}], :court/wikidata [#:court{:id "court-can", :wikidata "Q196615"}]}
+  {:jurisdiction/code "CHE", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-che", :wikidata "Q684719"}], :court/wikidata [#:court{:id "court-che", :wikidata "Q676553"}]}
+  {:jurisdiction/code "CHL", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-chl", :wikidata "Q1968468"}], :court/wikidata [#:court{:id "court-chl", :wikidata "Q374398"}]}
+  {:jurisdiction/code "CHN", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-chn", :wikidata "Q19211"}], :court/wikidata [#:court{:id "court-chn", :wikidata "Q691994"}]}
+  {:jurisdiction/code "CIV", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-civ", :wikidata "Q27881072"}], :court/wikidata []}
+  {:jurisdiction/code "CMR", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-cmr", :wikidata "Q25039919"}], :court/wikidata [#:court{:id "court-cmr", :wikidata "Q136989"}]}
+  {:jurisdiction/code "COD", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-cod", :wikidata "Q282928"}], :court/wikidata [#:court{:id "court-cod", :wikidata "Q3000938"}]}
+  {:jurisdiction/code "COE", :jurisdiction/kind :supranational, :legislature/wikidata [], :court/wikidata []}
+  {:jurisdiction/code "COG", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-cog", :wikidata "Q4345421"}], :court/wikidata []}
+  {:jurisdiction/code "COL", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-col", :wikidata "Q1284236"}], :court/wikidata [#:court{:id "court-col", :wikidata "Q3001110"}]}
+  {:jurisdiction/code "COM", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-com", :wikidata "Q1573424"}], :court/wikidata [#:court{:id "court-com", :wikidata "Q4109094"}]}
+  {:jurisdiction/code "CPV", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-cpv", :wikidata "Q1718790"}], :court/wikidata [#:court{:id "court-cpv", :wikidata "Q25440251"}]}
+  {:jurisdiction/code "CRI", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-cri", :wikidata "Q1386962"}], :court/wikidata [#:court{:id "court-cri", :wikidata "Q7644938"}]}
+  {:jurisdiction/code "CUB", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-cub", :wikidata "Q720753"}], :court/wikidata [#:court{:id "court-cub", :wikidata "Q7644899"}]}
+  {:jurisdiction/code "CYP", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-cyp", :wikidata "Q1112381"}], :court/wikidata [#:court{:id "court-cyp", :wikidata "Q19201850"}]}
+  {:jurisdiction/code "CZE", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-cze", :wikidata "Q2347172"}], :court/wikidata [#:court{:id "court-cze", :wikidata "Q7645005"}]}
+  {:jurisdiction/code "DEU", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-deu", :wikidata "Q146138"}], :court/wikidata [#:court{:id "court-deu", :wikidata "Q56025"}]}
+  {:jurisdiction/code "DJI", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-dji", :wikidata "Q1139363"}], :court/wikidata [#:court{:id "court-dji", :wikidata "Q106938197"}]}
+  {:jurisdiction/code "DMA", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-dma", :wikidata "Q1297237"}], :court/wikidata []}
+  {:jurisdiction/code "DOM", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-dom", :wikidata "Q595411"}], :court/wikidata [#:court{:id "court-dom", :wikidata "Q6136068"}]}
+  {:jurisdiction/code "DZA", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-dza", :wikidata "Q3142337"}], :court/wikidata [#:court{:id "court-dza", :wikidata "Q25462150"}]}
+  {:jurisdiction/code "ECU", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-ecu", :wikidata "Q1319595"}], :court/wikidata []}
+  {:jurisdiction/code "EGY", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-egy", :wikidata "Q2584535"}], :court/wikidata [#:court{:id "court-egy", :wikidata "Q2156821"}]}
+  {:jurisdiction/code "ESP", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-esp", :wikidata "Q219692"}], :court/wikidata [#:court{:id "court-esp", :wikidata "Q19746"}]}
+  {:jurisdiction/code "EST", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-est", :wikidata "Q217799"}], :court/wikidata [#:court{:id "court-est", :wikidata "Q1514159"}]}
+  {:jurisdiction/code "ETH", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-eth", :wikidata "Q257899"}], :court/wikidata [#:court{:id "court-eth", :wikidata "Q16117669"}]}
+  {:jurisdiction/code "EU", :jurisdiction/kind :supranational, :legislature/wikidata [], :court/wikidata []}
+  {:jurisdiction/code "FIN", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-fin", :wikidata "Q643412"}], :court/wikidata [#:court{:id "court-fin", :wikidata "Q500459"}]}
+  {:jurisdiction/code "FJI", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-fji", :wikidata "Q4345425"}], :court/wikidata [#:court{:id "court-fji", :wikidata "Q7644836"}]}
+  {:jurisdiction/code "FRA", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-fra", :wikidata "Q632552"}], :court/wikidata [#:court{:id "court-fra", :wikidata "Q769657"}]}
+  {:jurisdiction/code "FSM", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-fsm", :wikidata "Q1287548"}], :court/wikidata []}
+  {:jurisdiction/code "GAB", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-gab", :wikidata "Q4345413"}], :court/wikidata []}
+  {:jurisdiction/code "GBR", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-gbr", :wikidata "Q11010"}], :court/wikidata [#:court{:id "court-gbr", :wikidata "Q1122261"}]}
+  {:jurisdiction/code "GEO", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-geo", :wikidata "Q1417210"}], :court/wikidata [#:court{:id "court-geo", :wikidata "Q7644905"}]}
+  {:jurisdiction/code "GHA", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-gha", :wikidata "Q1807513"}], :court/wikidata [#:court{:id "court-gha", :wikidata "Q1513611"}]}
+  {:jurisdiction/code "GIN", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-gin", :wikidata "Q1853235"}], :court/wikidata [#:court{:id "court-gin", :wikidata "Q4109088"}]}
+  {:jurisdiction/code "GMB", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-gmb", :wikidata "Q1427127"}], :court/wikidata []}
+  {:jurisdiction/code "GNB", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-gnb", :wikidata "Q740533"}], :court/wikidata [#:court{:id "court-gnb", :wikidata "Q137379960"}]}
+  {:jurisdiction/code "GNQ", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-gnq", :wikidata "Q16878152"}], :court/wikidata []}
+  {:jurisdiction/code "GRC", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-grc", :wikidata "Q477089"}], :court/wikidata [#:court{:id "court-grc", :wikidata "Q174932"}]}
+  {:jurisdiction/code "GRD", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-grd", :wikidata "Q1253647"}], :court/wikidata []}
+  {:jurisdiction/code "GTM", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-gtm", :wikidata "Q1136026"}], :court/wikidata [#:court{:id "court-gtm", :wikidata "Q5789493"}]}
+  {:jurisdiction/code "GUY", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-guy", :wikidata "Q1512579"}], :court/wikidata []}
+  {:jurisdiction/code "HND", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-hnd", :wikidata "Q1415847"}], :court/wikidata [#:court{:id "court-hnd", :wikidata "Q7644913"}]}
+  {:jurisdiction/code "HRV", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-hrv", :wikidata "Q371576"}], :court/wikidata [#:court{:id "court-hrv", :wikidata "Q6593628"}]}
+  {:jurisdiction/code "HTI", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-hti", :wikidata "Q742110"}], :court/wikidata [#:court{:id "court-hti", :wikidata "Q3001011"}]}
+  {:jurisdiction/code "HUN", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-hun", :wikidata "Q648716"}], :court/wikidata [#:court{:id "court-hun", :wikidata "Q17511538"}]}
+  {:jurisdiction/code "IACHR", :jurisdiction/kind :international-court, :legislature/wikidata [], :court/wikidata []}
+  {:jurisdiction/code "ICC", :jurisdiction/kind :international-court, :legislature/wikidata [], :court/wikidata []}
+  {:jurisdiction/code "ICJ", :jurisdiction/kind :international-court, :legislature/wikidata [], :court/wikidata []}
+  {:jurisdiction/code "IDN", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-idn", :wikidata "Q818711"}], :court/wikidata [#:court{:id "court-idn", :wikidata "Q4200557"}]}
+  {:jurisdiction/code "IND", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-ind", :wikidata "Q695252"}], :court/wikidata [#:court{:id "court-ind", :wikidata "Q213380"}]}
+  {:jurisdiction/code "IRL", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-irl", :wikidata "Q129821"}], :court/wikidata [#:court{:id "court-irl", :wikidata "Q153617"}]}
+  {:jurisdiction/code "IRN", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-irn", :wikidata "Q378605"}], :court/wikidata [#:court{:id "court-irn", :wikidata "Q13107481"}]}
+  {:jurisdiction/code "IRQ", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-irq", :wikidata "Q1973075"}], :court/wikidata [#:court{:id "court-irq", :wikidata "Q3001100"}]}
+  {:jurisdiction/code "ISL", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-isl", :wikidata "Q131279"}], :court/wikidata [#:court{:id "court-isl", :wikidata "Q135356"}]}
+  {:jurisdiction/code "ISR", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-isr", :wikidata "Q133396"}], :court/wikidata [#:court{:id "court-isr", :wikidata "Q399798"}]}
+  {:jurisdiction/code "ITA", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-ita", :wikidata "Q1117578"}], :court/wikidata [#:court{:id "court-ita", :wikidata "Q1135541"}]}
+  {:jurisdiction/code "ITLOS", :jurisdiction/kind :international-court, :legislature/wikidata [], :court/wikidata []}
+  {:jurisdiction/code "JAM", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-jam", :wikidata "Q122635"}], :court/wikidata []}
+  {:jurisdiction/code "JOR", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-jor", :wikidata "Q820697"}], :court/wikidata []}
+  {:jurisdiction/code "JPN", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-jpn", :wikidata "Q202384"}], :court/wikidata [#:court{:id "court-jpn", :wikidata "Q1142255"}]}
+  {:jurisdiction/code "KAZ", :jurisdiction/kind :national, :legislature/wikidata [], :court/wikidata [#:court{:id "court-kaz", :wikidata "Q4109099"}]}
+  {:jurisdiction/code "KEN", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-ken", :wikidata "Q14468380"}], :court/wikidata [#:court{:id "court-ken", :wikidata "Q2368297"}]}
+  {:jurisdiction/code "KGZ", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-kgz", :wikidata "Q578193"}], :court/wikidata [#:court{:id "court-kgz", :wikidata "Q106498794"}]}
+  {:jurisdiction/code "KHM", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-khm", :wikidata "Q1320418"}], :court/wikidata []}
+  {:jurisdiction/code "KIR", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-kir", :wikidata "Q1281107"}], :court/wikidata []}
+  {:jurisdiction/code "KNA", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-kna", :wikidata "Q654504"}], :court/wikidata []}
+  {:jurisdiction/code "KOR", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-kor", :wikidata "Q494162"}], :court/wikidata [#:court{:id "court-kor", :wikidata "Q623906"}]}
+  {:jurisdiction/code "KWT", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-kwt", :wikidata "Q1139228"}], :court/wikidata []}
+  {:jurisdiction/code "LAO", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-lao", :wikidata "Q1188525"}], :court/wikidata []}
+  {:jurisdiction/code "LBN", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-lbn", :wikidata "Q1422275"}], :court/wikidata []}
+  {:jurisdiction/code "LBR", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-lbr", :wikidata "Q4345418"}], :court/wikidata [#:court{:id "court-lbr", :wikidata "Q174776"}]}
+  {:jurisdiction/code "LBY", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-lby", :wikidata "Q17443556"}], :court/wikidata [#:court{:id "court-lby", :wikidata "Q121546554"}]}
+  {:jurisdiction/code "LCA", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-lca", :wikidata "Q1563736"}], :court/wikidata []}
+  {:jurisdiction/code "LIE", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-lie", :wikidata "Q1149644"}], :court/wikidata [#:court{:id "court-lie", :wikidata "Q1277866"}]}
+  {:jurisdiction/code "LKA", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-lka", :wikidata "Q1450753"}], :court/wikidata [#:court{:id "court-lka", :wikidata "Q1702908"}]}
+  {:jurisdiction/code "LSO", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-lso", :wikidata "Q4345419"}], :court/wikidata []}
+  {:jurisdiction/code "LTU", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-ltu", :wikidata "Q374152"}], :court/wikidata [#:court{:id "court-ltu", :wikidata "Q630332"}]}
+  {:jurisdiction/code "LUX", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-lux", :wikidata "Q517449"}], :court/wikidata [#:court{:id "court-lux", :wikidata "Q1518827"}]}
+  {:jurisdiction/code "LVA", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-lva", :wikidata "Q822919"}], :court/wikidata [#:court{:id "court-lva", :wikidata "Q4109095"}]}
+  {:jurisdiction/code "MAR", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-mar", :wikidata "Q3004884"}], :court/wikidata [#:court{:id "court-mar", :wikidata "Q3001004"}]}
+  {:jurisdiction/code "MCO", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-mco", :wikidata "Q1127198"}], :court/wikidata [#:court{:id "court-mco", :wikidata "Q2743465"}]}
+  {:jurisdiction/code "MDA", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-mda", :wikidata "Q555809"}], :court/wikidata [#:court{:id "court-mda", :wikidata "Q7644941"}]}
+  {:jurisdiction/code "MDG", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-mdg", :wikidata "Q3919000"}], :court/wikidata []}
+  {:jurisdiction/code "MDV", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-mdv", :wikidata "Q650066"}], :court/wikidata [#:court{:id "court-mdv", :wikidata "Q24944325"}]}
+  {:jurisdiction/code "MEX", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-mex", :wikidata "Q1484825"}], :court/wikidata [#:court{:id "court-mex", :wikidata "Q130925"}]}
+  {:jurisdiction/code "MHL", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-mhl", :wikidata "Q1280186"}], :court/wikidata [#:court{:id "court-mhl", :wikidata "Q25350659"}]}
+  {:jurisdiction/code "MKD", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-mkd", :wikidata "Q1258164"}], :court/wikidata [#:court{:id "court-mkd", :wikidata "Q20565315"}]}
+  {:jurisdiction/code "MLI", :jurisdiction/kind :national, :legislature/wikidata [], :court/wikidata [#:court{:id "court-mli", :wikidata "Q3001096"}]}
+  {:jurisdiction/code "MLT", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-mlt", :wikidata "Q1817866"}], :court/wikidata []}
+  {:jurisdiction/code "MMR", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-mmr", :wikidata "Q3363019"}], :court/wikidata [#:court{:id "court-mmr", :wikidata "Q4120189"}]}
+  {:jurisdiction/code "MNE", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-mne", :wikidata "Q1579497"}], :court/wikidata [#:court{:id "court-mne", :wikidata "Q119716607"}]}
+  {:jurisdiction/code "MNG", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-mng", :wikidata "Q1544714"}], :court/wikidata [#:court{:id "court-mng", :wikidata "Q7644946"}]}
+  {:jurisdiction/code "MOZ", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-moz", :wikidata "Q1848595"}], :court/wikidata [#:court{:id "court-moz", :wikidata "Q5438742"}]}
+  {:jurisdiction/code "MRT", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-mrt", :wikidata "Q1138935"}], :court/wikidata []}
+  {:jurisdiction/code "MUS", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-mus", :wikidata "Q1854129"}], :court/wikidata [#:court{:id "court-mus", :wikidata "Q7644943"}]}
+  {:jurisdiction/code "MWI", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-mwi", :wikidata "Q1577811"}], :court/wikidata []}
+  {:jurisdiction/code "MYS", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-mys", :wikidata "Q2986392"}], :court/wikidata [#:court{:id "court-mys", :wikidata "Q5440171"}]}
+  {:jurisdiction/code "NAM", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-nam", :wikidata "Q4167580"}], :court/wikidata [#:court{:id "court-nam", :wikidata "Q1408827"}]}
+  {:jurisdiction/code "NGA", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-nga", :wikidata "Q2635070"}], :court/wikidata [#:court{:id "court-nga", :wikidata "Q3509369"}]}
+  {:jurisdiction/code "NIC", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-nic", :wikidata "Q1969591"}], :court/wikidata [#:court{:id "court-nic", :wikidata "Q65120545"}]}
+  {:jurisdiction/code "NOR", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-nor", :wikidata "Q109016"}], :court/wikidata [#:court{:id "court-nor", :wikidata "Q1574420"}]}
+  {:jurisdiction/code "NPL", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-npl", :wikidata "Q3896143"}], :court/wikidata [#:court{:id "court-npl", :wikidata "Q7644951"}]}
+  {:jurisdiction/code "NRU", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-nru", :wikidata "Q1972029"}], :court/wikidata [#:court{:id "court-nru", :wikidata "Q7644949"}]}
+  {:jurisdiction/code "NZL", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-nzl", :wikidata "Q1520966"}], :court/wikidata [#:court{:id "court-nzl", :wikidata "Q1355832"}]}
+  {:jurisdiction/code "OMN", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-omn", :wikidata "Q5176472"}], :court/wikidata []}
+  {:jurisdiction/code "PAK", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-pak", :wikidata "Q2665089"}], :court/wikidata [#:court{:id "court-pak", :wikidata "Q2989473"}]}
+  {:jurisdiction/code "PAN", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-pan", :wikidata "Q1368588"}], :court/wikidata [#:court{:id "court-pan", :wikidata "Q23723806"}]}
+  {:jurisdiction/code "PER", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-per", :wikidata "Q1357543"}], :court/wikidata [#:court{:id "court-per", :wikidata "Q5789494"}]}
+  {:jurisdiction/code "PHL", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-phl", :wikidata "Q1542985"}], :court/wikidata [#:court{:id "court-phl", :wikidata "Q514212"}]}
+  {:jurisdiction/code "PLW", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-plw", :wikidata "Q1384462"}], :court/wikidata [#:court{:id "court-plw", :wikidata "Q7644966"}]}
+  {:jurisdiction/code "PNG", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-png", :wikidata "Q24563"}], :court/wikidata [#:court{:id "court-png", :wikidata "Q7644964"}]}
+  {:jurisdiction/code "POL", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-pol", :wikidata "Q2102558"}], :court/wikidata [#:court{:id "court-pol", :wikidata "Q600231"}]}
+  {:jurisdiction/code "PRK", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-prk", :wikidata "Q714698"}], :court/wikidata [#:court{:id "court-prk", :wikidata "Q3178401"}]}
+  {:jurisdiction/code "PRT", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-prt", :wikidata "Q740564"}], :court/wikidata [#:court{:id "court-prt", :wikidata "Q7232693"}]}
+  {:jurisdiction/code "PRY", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-pry", :wikidata "Q2511660"}], :court/wikidata [#:court{:id "court-pry", :wikidata "Q7644969"}]}
+  {:jurisdiction/code "QAT", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-qat", :wikidata "Q818691"}], :court/wikidata [#:court{:id "court-qat", :wikidata "Q12192494"}]}
+  {:jurisdiction/code "ROU", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-rou", :wikidata "Q1813360"}], :court/wikidata [#:court{:id "court-rou", :wikidata "Q5755230"}]}
+  {:jurisdiction/code "RUS", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-rus", :wikidata "Q457869"}], :court/wikidata [#:court{:id "court-rus", :wikidata "Q2622450"}]}
+  {:jurisdiction/code "RWA", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-rwa", :wikidata "Q4162795"}], :court/wikidata [#:court{:id "court-rwa", :wikidata "Q7644978"}]}
+  {:jurisdiction/code "SAU", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-sau", :wikidata "Q62399316"}], :court/wikidata [#:court{:id "court-sau", :wikidata "Q20393621"}]}
+  {:jurisdiction/code "SDN", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-sdn", :wikidata "Q4902948"}], :court/wikidata [#:court{:id "court-sdn", :wikidata "Q7644845"}]}
+  {:jurisdiction/code "SEN", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-sen", :wikidata "Q1853640"}], :court/wikidata [#:court{:id "court-sen", :wikidata "Q3001010"}]}
+  {:jurisdiction/code "SGP", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-sgp", :wikidata "Q1517231"}], :court/wikidata [#:court{:id "court-sgp", :wikidata "Q14874268"}]}
+  {:jurisdiction/code "SLB", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-slb", :wikidata "Q727851"}], :court/wikidata []}
+  {:jurisdiction/code "SLE", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-sle", :wikidata "Q1138130"}], :court/wikidata [#:court{:id "court-sle", :wikidata "Q7644980"}]}
+  {:jurisdiction/code "SLV", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-slv", :wikidata "Q1812873"}], :court/wikidata [#:court{:id "court-slv", :wikidata "Q7644901"}]}
+  {:jurisdiction/code "SMR", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-smr", :wikidata "Q817979"}], :court/wikidata []}
+  {:jurisdiction/code "SOM", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-som", :wikidata "Q176597"}], :court/wikidata []}
+  {:jurisdiction/code "SRB", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-srb", :wikidata "Q920222"}], :court/wikidata [#:court{:id "court-srb", :wikidata "Q3608414"}]}
+  {:jurisdiction/code "SSD", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-ssd", :wikidata "Q5018721"}], :court/wikidata [#:court{:id "court-ssd", :wikidata "Q7568581"}]}
+  {:jurisdiction/code "STP", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-stp", :wikidata "Q1267064"}], :court/wikidata [#:court{:id "court-stp", :wikidata "Q3196789"}]}
+  {:jurisdiction/code "SUR", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-sur", :wikidata "Q1760847"}], :court/wikidata [#:court{:id "court-sur", :wikidata "Q2394876"}]}
+  {:jurisdiction/code "SVK", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-svk", :wikidata "Q1139204"}], :court/wikidata []}
+  {:jurisdiction/code "SVN", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-svn", :wikidata "Q1288169"}], :court/wikidata [#:court{:id "court-svn", :wikidata "Q12040608"}]}
+  {:jurisdiction/code "SWE", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-swe", :wikidata "Q272930"}], :court/wikidata [#:court{:id "court-swe", :wikidata "Q741421"}]}
+  {:jurisdiction/code "SWZ", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-swz", :wikidata "Q7138942"}], :court/wikidata []}
+  {:jurisdiction/code "SYC", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-syc", :wikidata "Q676484"}], :court/wikidata [#:court{:id "court-syc", :wikidata "Q25245503"}]}
+  {:jurisdiction/code "SYR", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-syr", :wikidata "Q1372196"}], :court/wikidata [#:court{:id "court-syr", :wikidata "Q7644818"}]}
+  {:jurisdiction/code "TCD", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-tcd", :wikidata "Q1599346"}], :court/wikidata [#:court{:id "court-tcd", :wikidata "Q5164289"}]}
+  {:jurisdiction/code "TGO", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-tgo", :wikidata "Q1969578"}], :court/wikidata [#:court{:id "court-tgo", :wikidata "Q125959623"}]}
+  {:jurisdiction/code "THA", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-tha", :wikidata "Q1368318"}], :court/wikidata [#:court{:id "court-tha", :wikidata "Q6152383"}]}
+  {:jurisdiction/code "TJK", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-tjk", :wikidata "Q2011165"}], :court/wikidata [#:court{:id "court-tjk", :wikidata "Q21662238"}]}
+  {:jurisdiction/code "TKM", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-tkm", :wikidata "Q106506537"}], :court/wikidata [#:court{:id "court-tkm", :wikidata "Q51874774"}]}
+  {:jurisdiction/code "TLS", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-tls", :wikidata "Q680806"}], :court/wikidata []}
+  {:jurisdiction/code "TON", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-ton", :wikidata "Q1287831"}], :court/wikidata [#:court{:id "court-ton", :wikidata "Q1253633"}]}
+  {:jurisdiction/code "TTO", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-tto", :wikidata "Q7138943"}], :court/wikidata []}
+  {:jurisdiction/code "TUN", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-tun", :wikidata "Q18342090"}], :court/wikidata []}
+  {:jurisdiction/code "TUR", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-tur", :wikidata "Q274918"}], :court/wikidata [#:court{:id "court-tur", :wikidata "Q598862"}]}
+  {:jurisdiction/code "TUV", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-tuv", :wikidata "Q897278"}], :court/wikidata []}
+  {:jurisdiction/code "TZA", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-tza", :wikidata "Q1138299"}], :court/wikidata []}
+  {:jurisdiction/code "UGA", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-uga", :wikidata "Q2052850"}], :court/wikidata [#:court{:id "court-uga", :wikidata "Q2368307"}]}
+  {:jurisdiction/code "UKR", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-ukr", :wikidata "Q176296"}], :court/wikidata [#:court{:id "court-ukr", :wikidata "Q2274281"}]}
+  {:jurisdiction/code "UN", :jurisdiction/kind :supranational, :legislature/wikidata [], :court/wikidata []}
+  {:jurisdiction/code "URY", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-ury", :wikidata "Q1501988"}], :court/wikidata [#:court{:id "court-ury", :wikidata "Q6512554"}]}
+  {:jurisdiction/code "USA", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-usa", :wikidata "Q11268"}], :court/wikidata [#:court{:id "court-usa", :wikidata "Q11201"}]}
+  {:jurisdiction/code "UZB", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-uzb", :wikidata "Q1583318"}], :court/wikidata [#:court{:id "court-uzb", :wikidata "Q6420384"}]}
+  {:jurisdiction/code "VCT", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-vct", :wikidata "Q1138357"}], :court/wikidata []}
+  {:jurisdiction/code "VEN", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-ven", :wikidata "Q1585014"}], :court/wikidata [#:court{:id "court-ven", :wikidata "Q578438"}]}
+  {:jurisdiction/code "VNM", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-vnm", :wikidata "Q1765001"}], :court/wikidata [#:court{:id "court-vnm", :wikidata "Q4120183"}]}
+  {:jurisdiction/code "VUT", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-vut", :wikidata "Q764201"}], :court/wikidata [#:court{:id "court-vut", :wikidata "Q7644993"}]}
+  {:jurisdiction/code "WSM", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-wsm", :wikidata "Q1269555"}], :court/wikidata [#:court{:id "court-wsm", :wikidata "Q48804555"}]}
+  {:jurisdiction/code "WTOAB", :jurisdiction/kind :international-court, :legislature/wikidata [], :court/wikidata []}
+  {:jurisdiction/code "YEM", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-yem", :wikidata "Q34665845"}], :court/wikidata [#:court{:id "court-yem", :wikidata "Q12192498"}]}
+  {:jurisdiction/code "ZAF", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-zaf", :wikidata "Q2185780"}], :court/wikidata [#:court{:id "court-zaf", :wikidata "Q1133886"}]}
+  {:jurisdiction/code "ZMB", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-zmb", :wikidata "Q1784088"}], :court/wikidata []}
+  {:jurisdiction/code "ZWE", :jurisdiction/kind :national, :legislature/wikidata [#:legislature{:id "legislature-zwe", :wikidata "Q2083905"}], :court/wikidata [#:court{:id "court-zwe", :wikidata "Q7644999"}]}]}

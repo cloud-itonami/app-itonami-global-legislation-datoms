@@ -1,0 +1,157 @@
+#!/usr/bin/env nbb
+;; AWAI-3621: verifies coverage/public-identifiers.edn against
+;; data/datascript-tx.edn. Reads files only; writes nothing.
+;;
+;; It rebuilds the table in memory from the catalog and fails when the
+;; committed table differs. It also fails when a Wikidata value is not of the
+;; form Q followed by digits, or when the same Wikidata identifier is attached
+;; to entities of two different jurisdictions (the pairs are printed).
+;;
+;; Kind is taken from :jurisdiction/kind only: no code is judged ISO 3166-1
+;; alpha-3 by shape (COE, ICC and ICJ are three capital letters and are not
+;; countries). ELI is absent at this level of the catalog, so there is no ELI
+;; column and none is expected.
+(require '[edamame.core :as edn]
+         '[clojure.string :as str]
+         '[clojure.set :as set])
+
+(def fs (js/require "fs"))
+(def crypto (js/require "crypto"))
+
+(def src-path "data/datascript-tx.edn")
+(def table-path "coverage/public-identifiers.edn")
+
+(def problems (atom []))
+(defn bad! [& xs]
+  (swap! problems conj (str/join " " (map str xs))))
+
+(defn slurp* [p]
+  (try (.toString (.readFileSync fs p))
+       (catch js/Error e
+         (bad! "cannot read" p ":" (.-message e))
+         nil)))
+
+(defn wellformed-wikidata? [v]
+  (and (string? v) (boolean (re-matches #"Q[0-9]+" v))))
+
+(let [src-bytes (try (.readFileSync fs src-path)
+                     (catch js/Error e
+                       (bad! "cannot read" src-path ":" (.-message e))
+                       nil))
+      table-text (slurp* table-path)]
+  (when (and src-bytes table-text)
+    (let [actual-sha256 (.. crypto (createHash "sha256") (update src-bytes) (digest "hex"))
+          tx (try (edn/parse-string (.toString src-bytes))
+                  (catch js/Error e
+                    (bad! "cannot parse" src-path ":" (.-message e))
+                    nil))
+          table (try (edn/parse-string table-text)
+                     (catch js/Error e
+                       (bad! "cannot parse" table-path ":" (.-message e))
+                       nil))]
+      (when (and tx table)
+        (let [jur (filter #(contains? % :jurisdiction/code) tx)
+              leg (filter #(contains? % :legislature/id) tx)
+              crt (filter #(contains? % :court/id) tx)
+              leg-by-jur (group-by :legislature/jurisdiction leg)
+              crt-by-jur (group-by :court/jurisdiction crt)
+              entries (fn [code by-jur id-k wd-k]
+                        (mapv (fn [e] {id-k (get e id-k) wd-k (get e wd-k)})
+                              (sort-by id-k (get by-jur code []))))
+              expected-rows
+              (mapv (fn [j]
+                      (let [code (:jurisdiction/code j)]
+                        {:jurisdiction/code code
+                         :jurisdiction/kind (:jurisdiction/kind j)
+                         :legislature/wikidata (entries code leg-by-jur :legislature/id :legislature/wikidata)
+                         :court/wikidata (entries code crt-by-jur :court/id :court/wikidata)}))
+                    (sort-by :jurisdiction/code jur))
+              with-wd? (fn [row] (boolean (or (seq (:legislature/wikidata row))
+                                              (seq (:court/wikidata row)))))
+              expected-counts
+              {:jurisdictions/total (count jur)
+               :jurisdictions/by-kind (into (sorted-map) (frequencies (map :jurisdiction/kind jur)))
+               :jurisdictions/with-wikidata (count (filter with-wd? expected-rows))
+               :jurisdictions/without-wikidata (count (remove with-wd? expected-rows))
+               :legislatures/with-wikidata (count (filter :legislature/wikidata leg))
+               :legislatures/without-wikidata (count (remove :legislature/wikidata leg))
+               :courts/with-wikidata (count (filter :court/wikidata crt))
+               :courts/without-wikidata (count (remove :court/wikidata crt))}
+              committed-rows (:public-identifiers/rows table)
+              committed-counts (:public-identifiers/counts table)]
+          ;; 1. The header must name the bytes it was derived from.
+          (when-not (= actual-sha256 (:public-identifiers/source-sha256 table))
+            (bad! "source sha256 mismatch: file" src-path "is" actual-sha256
+                  "but" table-path "claims"
+                  (:public-identifiers/source-sha256 table)))
+          ;; 2. The committed rows must equal the in-memory rebuild.
+          (when-not (= expected-rows committed-rows)
+            (let [exp-by-code (into {} (map (juxt :jurisdiction/code identity) expected-rows))
+                  com-by-code (into {} (map (juxt :jurisdiction/code identity) committed-rows))
+                  exp-codes (set (keys exp-by-code))
+                  com-codes (set (keys com-by-code))]
+              (doseq [c (sort (set/difference exp-codes com-codes))]
+                (bad! "row missing from" table-path ":" c))
+              (doseq [c (sort (set/difference com-codes exp-codes))]
+                (bad! "extra row in" table-path "with no catalog jurisdiction:" c))
+              (doseq [c (sort (filter #(and (contains? exp-by-code %)
+                                            (contains? com-by-code %)
+                                            (not= (get exp-by-code %) (get com-by-code %)))
+                                      exp-codes))]
+                (bad! "row differs for" c ": expected" (pr-str (get exp-by-code c))
+                      "got" (pr-str (get com-by-code c))))))
+          ;; 3. The recorded counts must equal the measured counts.
+          (when-not (= expected-counts committed-counts)
+            (bad! "counts differ: measured" (pr-str expected-counts)
+                  "but" table-path "records" (pr-str committed-counts)))
+          ;; 4. Every Wikidata value, rebuilt or committed, is Q + digits.
+          (doseq [[origin v holder]
+                  (concat (map (fn [e] ["catalog" (:legislature/wikidata e) (:legislature/id e)])
+                               (filter :legislature/wikidata leg))
+                          (map (fn [e] ["catalog" (:court/wikidata e) (:court/id e)])
+                               (filter :court/wikidata crt))
+                          (mapcat (fn [row]
+                                    (concat (map (fn [e] ["committed-table"
+                                                            (:legislature/wikidata e)
+                                                            (:legislature/id e)])
+                                                 (:legislature/wikidata row))
+                                            (map (fn [e] ["committed-table"
+                                                            (:court/wikidata e)
+                                                            (:court/id e)])
+                                                 (:court/wikidata row))))
+                                  (or committed-rows [])))]
+            (when-not (wellformed-wikidata? v)
+              (bad! "malformed Wikidata value" (pr-str v) "on" holder (str "(" origin ")"))))
+          ;; 5. One Wikidata identifier, one jurisdiction.
+          (let [holders (concat (map (fn [e] [(:legislature/wikidata e)
+                                              (:legislature/jurisdiction e)
+                                              (:legislature/id e)])
+                                     (filter :legislature/wikidata leg))
+                                (map (fn [e] [(:court/wikidata e)
+                                              (:court/jurisdiction e)
+                                              (:court/id e)])
+                                     (filter :court/wikidata crt)))
+                by-wd (group-by first holders)]
+            (doseq [[v hs] (sort-by first by-wd)
+                    :let [codes (distinct (map second hs))]
+                    :when (> (count codes) 1)]
+              (bad! "Wikidata" v "is attached to entities of"
+                    (count codes) "jurisdictions:"
+                    (str/join ", " (map (fn [[_ code id]] (str id "@" code)) hs)))))
+          ;; Measured counts, printed on every run.
+          (let [by-kind (:jurisdictions/by-kind expected-counts)]
+            (println (str "source: " src-path " sha256=" actual-sha256))
+            (println (str "jurisdictions total: " (:jurisdictions/total expected-counts)
+                          " (" (str/join " " (map (fn [[k n]] (str (name k) "=" n)) by-kind)) ")"))
+            (println (str "jurisdictions with wikidata: " (:jurisdictions/with-wikidata expected-counts)
+                          "; without: " (:jurisdictions/without-wikidata expected-counts)))
+            (println (str "legislatures with wikidata: " (:legislatures/with-wikidata expected-counts)
+                          "; without: " (:legislatures/without-wikidata expected-counts)))
+            (println (str "courts with wikidata: " (:courts/with-wikidata expected-counts)
+                          "; without: " (:courts/without-wikidata expected-counts)))))))))
+(if (seq @problems)
+  (do (binding [*out* *err*]
+        (println (str "FAIL -- " (count @problems) " problem(s):"))
+        (doseq [p @problems] (println (str "  - " p))))
+      (set! (.-exitCode js/process) 1))
+  (println "OK"))
