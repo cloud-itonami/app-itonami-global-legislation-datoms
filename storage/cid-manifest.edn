@@ -1,0 +1,74 @@
+;; storage/cid-manifest.edn -- Yataverse content identifiers for projections.
+;;
+;; One row per committed file under data/ (including every file under
+;; data/corpus/ and data/seed/) and schema/, each with the file's byte
+;; length, its sha256 (hex), and the content identifier (CID) those bytes
+;; would have on the Yataverse bytes plane.
+;;
+;; The CID is CIDv1, codec raw (0x55), multihash sha2-256, multibase
+;; base32 lower-case without padding (prefix `b`): the bytes
+;; 0x01 0x55 0x12 0x20 followed by the sha256 of the file.
+;;
+;; This is the SINGLE-RAW-BLOCK identifier of the file's bytes. It is an
+;; address derivable from the bytes alone and says NOTHING about whether a
+;; block of that size is accepted on, available from, or retrievable over
+;; any network. Nothing is uploaded, pinned, or fetched by this file or by
+;; the verifier that checks it.
+;;
+;; Checked by bin/verify-cid-manifest.cljk (reads files only):
+;;   nbb bin/verify-cid-manifest.cljk
+{:manifest/version 1,
+ :manifest/rows
+ [
+  {:path "data/corpus/eu.europa.eur-lex/laws-000.edn" :bytes 7293517 :sha256 "9507fedeb3f9e45c6635d419f3fdafeec20fced6377e7a40a1d94acef3dee386" :cid "bafkreieva77n5m7z4rogmnoudhz73l7oyih45vrxpz5ebiozjlhphxxdqy"}
+  {:path "data/corpus/eu.europa.eur-lex/laws-001.edn" :bytes 7011992 :sha256 "2345c55a1295d57aca44acf4773d01261cf4af9f20574f686c1e7a99dd860ee4" :cid "bafkreibdixcvueuv2v5murfm6r3t2ajgdt2k7hzak5hwq3a6pkm53bqo4q"}
+  {:path "data/corpus/eu.europa.eur-lex/laws-002.edn" :bytes 7113777 :sha256 "b6b9cddbec1b3b11f75f656c30043412503e1d93164c357c2359bfa3d913b83c" :cid "bafkreifwxhg5x3a3hmi7ox3fnqyainaska7b3eywjq2xyi2zx6r5se5yhq"}
+  {:path "data/corpus/eu.europa.eur-lex/laws-003.edn" :bytes 1504536 :sha256 "acb41e3030ca1a0f91e4f5f332e83c41edc832d2b873e8699703e15463d3d22b" :cid "bafkreifmwqpdamgkdihzdzhv6mzoqpcb5xedfuvyopugtfyd4fkghu6sfm"}
+  {:path "data/corpus/eu.europa.eur-lex/relations-000.edn" :bytes 4486132 :sha256 "c673b56441784c106f54e8042e74b85873ecca129674f9e107515ec8cb5bb0de" :cid "bafkreiggoo2wiqlyjqig6vhiaqxhjocyopwmueuwot46cb2rl3emww5q3y"}
+  {:path "data/corpus/eu.europa.eur-lex/relations-001.edn" :bytes 4414089 :sha256 "6902deaca2fa6c2f84888c8accc626f584dbc7b0d8873319cbf220945c30353d" :cid "bafkreidjalpkzix2nqxyjcemrlgmmjxvqtn4pmgyq4zrts7seckfymbvhu"}
+  {:path "data/corpus/eu.europa.eur-lex/relations-002.edn" :bytes 4330502 :sha256 "439509094a05e2fc0fb6534cf568c2e796c604ee30864967135ce55465992232" :cid "bafkreicdsueqssqf4l6a7nstjt2wrqxhs3daj3rqqzewoe244vkglgjcgi"}
+  {:path "data/corpus/eu.europa.eur-lex/relations-003.edn" :bytes 4330214 :sha256 "eef523e172959f16216274074f679af8d67ea3755e4ecd338f090266b3c70b2f" :cid "bafkreiho6ur6c4uvt4lccytua5hwpgxy2z7kg5k6j3gthdyjajtlhrylf4"}
+  {:path "data/corpus/eu.europa.eur-lex/relations-004.edn" :bytes 4338538 :sha256 "e9df38113930c8fc2e9b8392fe8fc085059860093ae5c86a651ad7e8ef32fd91" :cid "bafkreihj344bcojqzd6c5g4dsl7i7qefawmgacj24xeguzi227uo6mx5se"}
+  {:path "data/corpus/eu.europa.eur-lex/relations-005.edn" :bytes 4338387 :sha256 "576be343ea18b1bef6150dcc1931e7124a1aa65f8eddb0d35983174320da63ce" :cid "bafkreicxnpruh2qywg7pmfinzqmtdzysjinkmx4o3wyngwmdc5bsbwtdzy"}
+  {:path "data/corpus/eu.europa.eur-lex/relations-006.edn" :bytes 4343160 :sha256 "dccb1f1919ea2a9996bf88b7f05acb4670a7ec6becf3e8eb1b67a3d5585952b5" :cid "bafkreig4zmprsgpkfkmznp4iw7yfvs2goct6y27m6puowg3hupkvqwkswu"}
+  {:path "data/corpus/eu.europa.eur-lex/relations-007.edn" :bytes 4347177 :sha256 "ec7930f333ca33dfd35a8f1d857873265fa39930543fbe29bf921b2d7bdfd537" :cid "bafkreihmpeypgm6kgpp5gwupdwcxq4zgl6rzsmcuh67ctp4sdmwxxx6vg4"}
+  {:path "data/corpus/eu.europa.eur-lex/relations-008.edn" :bytes 4345857 :sha256 "f1d19688146cf6de6a483e1eea8939ac75ceea22cdcdd65a27ff36da3035e224" :cid "bafkreihr2gliqfdm63pgusb6d3visonmoxhouiwnzxlfuj77g3ndanpceq"}
+  {:path "data/corpus/eu.europa.eur-lex/relations-009.edn" :bytes 4348513 :sha256 "85af97cb6b349c5831638546b4cefb4473e7b5b41ed9d137f9d307e5c4b6497b" :cid "bafkreiefv6l4w2zutrmdcy4fi22m562eopt3lna63hitp6ota7s4jnsjpm"}
+  {:path "data/corpus/eu.europa.eur-lex/relations-010.edn" :bytes 4356980 :sha256 "55fb1cda5bc010bbd9a0d15de2eaada2cb0625e8574ea7bb619e264584a3a5cb" :cid "bafkreicv7monuw6acc55tigrlxrovlnczmdcl2cxj2t3wym6ezcyji5fzm"}
+  {:path "data/corpus/eu.europa.eur-lex/relations-011.edn" :bytes 4363159 :sha256 "5e42e473a606bcf2fa9df44570336e281712591f42a57efad6d18c2cd26f2b87" :cid "bafkreic6ilshhjqgxtzpvhpuivydg3ric4jfsh2cuv7pvvwrrqwne3zlq4"}
+  {:path "data/corpus/eu.europa.eur-lex/relations-012.edn" :bytes 4360899 :sha256 "69bc06db4f6504f536c49e386c7cf831ba08d5918e6e181f6b44730ac3934ae4" :cid "bafkreidjxqdnwt3fat2tnre6hbwhz6brxienlemonymb622eomfmhe2k4q"}
+  {:path "data/corpus/eu.europa.eur-lex/relations-013.edn" :bytes 4352880 :sha256 "b06ed3c3f10097bbb95e8d8c20f86312de7b2a833e8554d3c0b0131710ca2202" :cid "bafkreifqn3j4h4ias653sxunrqqpqyys3z5svaz6qvknhqfqcmlrbsrcai"}
+  {:path "data/corpus/eu.europa.eur-lex/relations-014.edn" :bytes 4357061 :sha256 "062188390b9f52b909034d682e7c7a319c7d8dddb01863c4c0bcf34b573bebae" :cid "bafkreiagegedsc47kk4qsa2nnaxhy6rrtr6y3xnqdbr4jqf46nfvoo7lvy"}
+  {:path "data/corpus/eu.europa.eur-lex/relations-015.edn" :bytes 4367109 :sha256 "ff0f34aab7fd6a7ae7d8870bff232c225414b48e02967ad953e98f27639b084f" :cid "bafkreih7b42kvn75nj5opwehbp7sglbckqkljdqcsz5nsu7jr4twhgyij4"}
+  {:path "data/corpus/eu.europa.eur-lex/relations-016.edn" :bytes 4357975 :sha256 "d3109307eda6b63e5915ca241348dfa140ebe985f4c4e701b44c2e593d4ee14d" :cid "bafkreigtccjqp3ngwy7fsfokeqjurx5bidv6tbpuyttqdncmfzmt2txbju"}
+  {:path "data/corpus/eu.europa.eur-lex/relations-017.edn" :bytes 4350626 :sha256 "79402f4f2619a7496138887fc391e54c1d1c0a4b36a0dd5fb0d76c4b13d344a3" :cid "bafkreidziaxu6jqzu5ewcoeip7bzdzkmduoauszwudov7mgxnrfrhu2eum"}
+  {:path "data/corpus/eu.europa.eur-lex/relations-018.edn" :bytes 4389816 :sha256 "e76b51c62493616364f72320e7ab2780c5dabee74a3ccf0c0bc5d7b762f7f78d" :cid "bafkreihhnni4mjetmfrwj5zdedt2wj4ayxnl5z2khthqyc6f263wf57xru"}
+  {:path "data/corpus/eu.europa.eur-lex/relations-019.edn" :bytes 4391111 :sha256 "10e9447773e39f952020a58acd5eaeb7b04053b072b7b8f170df6dbb5d2e4b63" :cid "bafkreiaq5fcho47dt6ksaiffrlgv5lvxwbafhmdsw64pc4g7nw5v2lslmm"}
+  {:path "data/corpus/eu.europa.eur-lex/relations-020.edn" :bytes 4417013 :sha256 "4767ecf852920746d5f6200e9cc45d0b68740884d715c3585aada9c2a6d6aa1b" :cid "bafkreichm7wpquusa5dnl5rab2omixilnb2arbgxcxbvqwvnvhbknvvkdm"}
+  {:path "data/corpus/eu.europa.eur-lex/relations-021.edn" :bytes 4426416 :sha256 "9fa91101b0876f14c699256e2a67ec64cc3492014bb344e2f3d378a4d7327dda" :cid "bafkreie7veiqdmehn4kmngjfnyvgp3dezq2jeaklwncof46tpcsnomt53i"}
+  {:path "data/corpus/eu.europa.eur-lex/relations-022.edn" :bytes 4423586 :sha256 "b82ebc581dad9bfee69153ed7ea8c4a78e9e4696ed5643f7cd139b902d8d9e94" :cid "bafkreifyf26fqhnntp7onekt5v7krrfhr2penfxnkzb7ptittoic3dm6sq"}
+  {:path "data/corpus/eu.europa.eur-lex/relations-023.edn" :bytes 4399773 :sha256 "9345ea0193f3202ddd75969fad0a89d94e5a40ec335b508425c7a7d32f2c82e5" :cid "bafkreietixvade7teaw525mwt6wqvcozjzneb3btlniiijohu7js6lec4u"}
+  {:path "data/corpus/eu.europa.eur-lex/relations-024.edn" :bytes 4421599 :sha256 "e8a4dfe905d14ef526c0f8fbcecb71e21f57abbe4fd51e355a76480778bc1ecb" :cid "bafkreihiutp6sborj32snqhy7phmw4pcd5l2xpsp2updkwtwjadxrpa6zm"}
+  {:path "data/corpus/eu.europa.eur-lex/relations-025.edn" :bytes 4411043 :sha256 "ebae1ef547fa0a3f9af63429654acbf503fdbc619246fab009db3ac8d57fe182" :cid "bafkreihlvyppkr72bi7zv5ruffsuvs7vap63yymsi35laco3hlenk77bqi"}
+  {:path "data/corpus/eu.europa.eur-lex/relations-026.edn" :bytes 919436 :sha256 "3bd2681a549a58cc53d2a9211150045c95a949c15e8c7399228f469fcf8fe556" :cid "bafkreib32jubuve2ldgfhuvjeeivabc4swuutqk6rrzzsiupi2p47d7fky"}
+  {:path "data/corpus/gov.govinfo.bulkdata/laws-000.edn" :bytes 13767087 :sha256 "3b726270210cfd17aebc9d46cb17345f83805633b96db27454e017cd735705ad" :cid "bafkreib3ojrhaiim7ul25pe5i3fronc7qoafmm5znwzhivhac7gxgvyfvu"}
+  {:path "data/corpus/gov.govinfo.bulkdata/relations-000.edn" :bytes 3045530 :sha256 "ca29be1400b5f6cf74d18e322b19c9c104505c76d2e1dbca34a5564d52c4333d" :cid "bafkreigkfg7biafv63hxjumogivrtsobarify5ws4hn4unffkzgvfrbthu"}
+  {:path "data/corpus/jp.go.e-gov.elaws/laws-000.edn" :bytes 7973376 :sha256 "47987f2bf3be6ffea7726c06dedad2f320aec17dba3c71c9840f73c0646920f6" :cid "bafkreichtb7sx456n77ko4tma3pnvuxtecxmc7n2hry4tbapopagi2ja6y"}
+  {:path "data/corpus/jp.go.e-gov.elaws/relations-000.edn" :bytes 2361735 :sha256 "d31563ae9c5ce34c14ce9100c3ccbea31a5597b0f9d18c7e18af0c94955e3e51" :cid "bafkreigtcvr25hc44ngbjturadb4zpvddjkzpmhz2ggh4gfpbskjkxr6ke"}
+  {:path "data/corpus/manifest.edn" :bytes 9662 :sha256 "54b7480c7c90cd4ac40e9c1ae2c4237d8a476047247e35dd757ac9b1d9c5a1e5" :cid "bafkreicuw5eay7eqzvfmidu4dlrmii35rjdwarzepy2525l2zgy5trnb4u"}
+  {:path "data/corpus/uk.gov.legislation/laws-000.edn" :bytes 2048807 :sha256 "12ea5a6b119d2d1a46972b9f9dd0cc3e43a2540da1e712391d8770f73a162954" :cid "bafkreias5jngwem5funenfzlt6o5btb6iorfidnb44jdshmhod3tufrjkq"}
+  {:path "data/corpus/uk.gov.legislation/relations-000.edn" :bytes 5449668 :sha256 "a4b10033395fc9d7368e7ea69291db1511fe9f98b63461bd797c07b01e2736a5" :cid "bafkreifeweadgok7zhltndt6u2jjdwyvch7j7gfwgrq326l4a6yb4jzwuu"}
+  {:path "data/corpus/uk.gov.legislation/relations-001.edn" :bytes 5297867 :sha256 "9a7a01dec77af83661c1c0f9d1e559ca65fd90214ef651342c8a4a435a848ff3" :cid "bafkreie2pia55r327a3gdqoa7hi6kwokmx6zaiko6zitilekjjbvvbep6m"}
+  {:path "data/corpus/uk.gov.legislation/relations-002.edn" :bytes 5376793 :sha256 "d055d3b2d01ec84d1885be85cc0cdae0a3c6a706e7527fdf9033813c70e56ea7" :cid "bafkreigqkxj3fua6zbgrrbn6qxgazwxaupdkobxhkj757ebtqe6hbzlou4"}
+  {:path "data/corpus/uk.gov.legislation/relations-003.edn" :bytes 5643169 :sha256 "8770263e2fe752fc3237f8d588b5c66e74f1e35d77c1705766d24e3bfa870a93" :cid "bafkreiehoatd4l7hkl6den7y2wellrtooty6gxlxyfyfozwsjy57vbyksm"}
+  {:path "data/corpus/uk.gov.legislation/relations-004.edn" :bytes 5936744 :sha256 "e8dd31e0a993a67dbfeede05df20d2d51484b3ea6745d99a11b86367892b1178" :cid "bafkreihi3uy6bkmtuz6373w6axpsbuwvcsclh2thixmzuenymntyskyrpa"}
+  {:path "data/corpus/uk.gov.legislation/relations-005.edn" :bytes 985052 :sha256 "95b8c85a151f82c3ba095a451dcad52a5acee3b9946e3b176318be6d8e2e3208" :cid "bafkreievxdefufi7qlb3uck2iuo4vvjkllhohomuny5royyyxzwy4lrsba"}
+  {:path "data/datascript-tx.edn" :bytes 107680 :sha256 "7a5b94b3f752deb74b362b62a1a5a1765ea38ae592e5ca917cb3724e3d5bdd3e" :cid "bafkreid2loklh52s323uwnrlmkq2lilwl2ryvzms4xfjc7ftojhd2w65hy"}
+  {:path "data/provenance.edn" :bytes 916 :sha256 "9e55ccda748e63dc891e89a99fae05c8ed5371e7a937f277f1c77ef61698b18c" :cid "bafkreie6kxgnu5eompoishujvgp24boi5vjxdz5jg7zhp4ohp33bngfrrq"}
+  {:path "data/quality-report.edn" :bytes 1511 :sha256 "c90013863283c32545d7085c1194d15c0817204976b2456e5c53715ddc66fd6c" :cid "bafkreigjaajymmudymsulvyilqizjuk4balsaslwwjcw4xctofo5yzx5nq"}
+  {:path "data/seed/hanrei-coverage.edn" :bytes 913 :sha256 "c3e6b4ceaed65bce7c9aeb9cbd873df9b13a17231467644f2dfff015a0b8f386" :cid "bafkreigd422m5lwwlphhzgxlts6yoppzwe5boiyum5se6lp76ak2bohtqy"}
+  {:path "data/seed/legal-sources.edn" :bytes 29079 :sha256 "9b651509f34f7e64ac6cf2c54e5aa64f1457be38d709154ee46b5e2e68039757" :cid "bafkreie3mukqt42ppzsky3hsyvhfvjspcrl34ogxbeku5zdllyxgqa4xk4"}
+  {:path "data/seed/prohibited-sources.edn" :bytes 1545 :sha256 "65a050b026e1a1536f5125d36737dfb611dbceef8996a37a0cd529192be0775f" :cid "bafkreidfubilajxbufjw6ujf2nttpx5wchn4534js2rxudgvfemsxydxl4"}
+  {:path "data/world-legislation.kotoba.edn" :bytes 234222 :sha256 "1208a53911c924ffefb80322273d3666154686dc2a96ce8eb2f3d527a12881ec" :cid "bafkreiasbcstseojet767oadeitt2ntgcvdinxbks3hi5mxt2ut2ckeb5q"}
+  {:path "schema/legislation.edn" :bytes 4031 :sha256 "0ec9738572cff54102bbef5e56c03eb8c70c971fddc81d947f7d305d9a8ae12b" :cid "bafkreiaozfzyk4wp6vaqfo7plzlmapvyy4gjoh65zaozi735gbozvcxbfm"}
+ ]}

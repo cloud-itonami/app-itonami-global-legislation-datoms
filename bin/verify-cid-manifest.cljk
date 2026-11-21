@@ -1,0 +1,209 @@
+#!/usr/bin/env nbb
+;; Verifies storage/cid-manifest.edn against the working tree, and reports
+;; how many :law.text/sha256 values in the corpus are expressible as CIDs.
+;;
+;; Reads files only. It never writes, uploads, pins or fetches anything.
+;;
+;; What it checks:
+;;   1. Every manifest row recomputes: the listed file must exist, and its
+;;      byte length, sha256 (hex) and CID must all match the row. A mismatch
+;;      means the row is stale -- the file changed after the manifest was
+;;      written -- and fails, naming the path and the field.
+;;   2. Every regular file under data/ and schema/ must have a row. An
+;;      unlisted file fails, naming the path.
+;;   3. The CID encoding itself, against one fixed vector that does not come
+;;      from this repository: the 11 bytes `hello world` (no newline) must
+;;      give bafkreifzjut3te2nhyekklss27nh3k72ysco7y32koao5eei66wof36n5e.
+;;      The encoding is derived from the definition below; if the result
+;;      ever differs, this script reports the disagreement instead of
+;;      adjusting the code to match.
+;;   4. A report (informational, never a failure) of how many
+;;      :law.text/sha256 values in data/corpus/ are well-formed 64-hex
+;;      digests -- and therefore expressible as the CID defined here -- and
+;;      how many are not. No CID attribute is added to the corpus and no
+;;      file under data/ is touched: the law texts themselves live in the
+;;      locked DataLad datasets, not in this repository, so a CID derived
+;;      from a :law.text/sha256 is an address, not evidence that the bytes
+;;      exist anywhere.
+;;
+;; The CID is CIDv1, codec raw (0x55), multihash sha2-256, multibase
+;; base32 lower-case without padding (prefix `b`): the bytes
+;; 0x01 0x55 0x12 0x20 followed by the sha256 digest. This is the
+;; single-raw-block identifier of those bytes; it says nothing about
+;; whether a block of that size is accepted on, available from, or
+;; retrievable over any network.
+(ns verify-cid-manifest
+  (:require [kotoba.lang.text :as str]
+            [edamame.core :as edn]))
+
+(def fs (js/require "fs"))
+(def crypto (js/require "crypto"))
+(def node-path (js/require "path"))
+
+(def manifest-path "storage/cid-manifest.edn")
+(def covered-dirs ["data" "schema"])
+(def corpus-dir "data/corpus")
+
+;; The one fixed vector. It does not come from this repository: it is the
+;; well-known `hello world` (11 bytes, no trailing newline) raw-CID, so an
+;; independent implementation of the definition above must agree with it.
+(def fixed-vector-bytes "hello world")
+(def fixed-vector-cid "bafkreifzjut3te2nhyekklss27nh3k72ysco7y32koao5eei66wof36n5e")
+
+(def problems (atom []))
+(defn bad! [& xs] (swap! problems conj (str/join " " (map str xs))))
+
+(defn slurp* [p] (.toString (.readFileSync fs p)))
+(defn read-edn [p] (edn/parse-string (slurp* p)))
+(defn sha256-hex [buf] (.digest (.update (.createHash crypto "sha256") buf) "hex"))
+
+(defn hex-char? [c]
+  (or (and (>= c "0") (<= c "9"))
+      (and (>= c "a") (<= c "f"))
+      (and (>= c "A") (<= c "F"))))
+
+(defn well-formed-sha256-hex?
+  "True when s is exactly 64 hex digits (a sha256 digest written as hex)."
+  [s]
+  (and (string? s)
+       (= 64 (count s))
+       (every? hex-char? (seq s))))
+
+(defn hex->bytes
+  "PURE: 64-hex sha256 digest string -> vector of 32 byte values.
+  Throws naming the cause on anything that is not a well-formed digest."
+  [hex]
+  (when-not (well-formed-sha256-hex? hex)
+    (throw (ex-info (str "not a well-formed 64-hex sha256 digest: " (pr-str hex))
+                    {:value hex})))
+  (mapv (fn [i] (js/parseInt (subs hex i (+ i 2)) 16))
+        (range 0 64 2)))
+
+(def base32-lower-alphabet "abcdefghijklmnopqrstuvwxyz234567")
+
+(defn base32-lower-nopad
+  "PURE: RFC 4648 base32, lower-case, no padding, of a seq of byte values."
+  [bytes]
+  (let [bits (vec (mapcat (fn [b]
+                            (mapv #(bit-and (bit-shift-right b %) 1)
+                                  [7 6 5 4 3 2 1 0]))
+                          bytes))
+        rem (mod (count bits) 5)
+        padded (if (zero? rem) bits (into bits (repeat (- 5 rem) 0)))]
+    (apply str (map (fn [group]
+                      (nth base32-lower-alphabet
+                           (reduce (fn [acc bit] (+ (* acc 2) bit)) 0 group)))
+                    (partition 5 padded)))))
+
+(defn cid-of-digest-hex
+  "PURE: a hex sha256 digest -> the Yataverse single-raw-block CID it names:
+  CIDv1 + raw codec (0x55) + sha2-256 multihash, base32 lower-case without
+  padding (`b` prefix), i.e. 0x01 0x55 0x12 0x20 || digest, base32-encoded."
+  [hex]
+  (str "b" (base32-lower-nopad (into [0x01 0x55 0x12 0x20] (hex->bytes hex)))))
+
+(defn cid-of-buffer [buf]
+  (cid-of-digest-hex (sha256-hex buf)))
+
+;; ── self-test: the pure encoding fns, synthetic inputs, no I/O (runs on
+;; every invocation, before any file is read) ─────────────────────────────
+(let [hello-hex "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9"]
+  (assert (= (cid-of-digest-hex hello-hex) fixed-vector-cid)
+          "cid-of-digest-hex(sha256('hello world')) must be the fixed vector")
+  (assert (= (count (cid-of-digest-hex hello-hex)) 59)
+          "a raw sha2-256 CID is 59 chars: `b` + 58 base32 chars"))
+(letfn [(rejects? [f x] (try (f x) false (catch :default _ true)))]
+  (assert (rejects? hex->bytes "not-hex-at-all")
+          "hex->bytes must reject non-hex input")
+  (assert (rejects? hex->bytes "b94d27")
+          "hex->bytes must reject a truncated digest")
+  (assert (rejects? hex->bytes (str "00" "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9"))
+          "hex->bytes must reject a 66-char digest")
+  (assert (rejects? hex->bytes 42)
+          "hex->bytes must reject a non-string")
+  (assert (rejects? cid-of-digest-hex "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")
+          "cid-of-digest-hex must reject non-hex")
+  (assert (well-formed-sha256-hex? "B94D27B9934D3E08A52E52D7DA7DABFAC484EFE37A5380EE9088F7ACE2EFCDE9")
+          "64 hex digits in any case are well-formed input (js/parseInt reads both)"))
+
+(defn walk-files
+  "All regular files under dir, as /-separated paths relative to the repo
+  root (which is the process working directory), sorted."
+  [dir]
+  (let [entries (array-seq (.readdirSync fs dir #js {:withFileTypes true}))]
+    (sort (mapcat (fn [e]
+                    (let [p (.join node-path dir (.-name e))]
+                      (if (.isDirectory e) (walk-files p) [p])))
+                  entries))))
+
+(defn check-fixed-vector []
+  (let [actual (cid-of-buffer (.from js/Buffer fixed-vector-bytes "utf8"))]
+    (println (str "fixed vector: sha256(\"hello world\") -> " actual))
+    (if (= actual fixed-vector-cid)
+      (println "fixed vector: OK (matches the external expectation)")
+      (bad! "FIXED-VECTOR DISAGREEMENT: derived" actual
+            "but the external expectation is" fixed-vector-cid
+            "-- the encoding was NOT adjusted to match; investigate"))))
+
+(defn check-manifest []
+  (when-not (.existsSync fs manifest-path)
+    (bad! "manifest missing:" manifest-path)
+    (println (str "manifest rows: 0 (" manifest-path " not found)"))
+    nil)
+  (let [{:keys [manifest/rows]} (read-edn manifest-path)]
+    (println (str "manifest rows: " (count rows)))
+    (when (not= (count rows) (count (distinct (map :path rows))))
+      (bad! "manifest lists a :path more than once"))
+    (doseq [{:keys [path bytes sha256 cid]} rows]
+      (if-not (.existsSync fs path)
+        (bad! "listed file is missing:" path)
+        (let [buf (.readFileSync fs path)
+              actual-bytes (.-length buf)
+              actual-sha (sha256-hex buf)
+              actual-cid (cid-of-buffer buf)]
+          (when (not= actual-bytes bytes)
+            (bad! "stale row for" path ": :bytes is" bytes "but the file has" actual-bytes))
+          (when (not= actual-sha sha256)
+            (bad! "stale row for" path ": :sha256 does not match the file"))
+          (when (not= actual-cid cid)
+            (bad! "stale row for" path ": :cid is" cid "but the file recomputes to" actual-cid)))))
+    (let [listed (into #{} (map :path rows))
+          on-disk (mapcat walk-files covered-dirs)]
+      (doseq [p on-disk]
+        (when-not (contains? listed p)
+          (bad! "file under data/ or schema/ is not listed in the manifest:" p))))))
+
+(defn corpus-sha256-counts
+  "Counts :law.text/sha256 values across data/corpus/*.edn by text scan,
+  split into well-formed 64-hex digests (expressible as the CID defined
+  here) and anything else. Reads files only."
+  []
+  (let [re (js/RegExp. ":law\\.text/sha256\\s+\"([^\"]*)\"" "g")
+        well (atom 0)
+        bad (atom 0)]
+    (doseq [p (walk-files corpus-dir)
+            :when (.endsWith p ".edn")]
+      (let [text (slurp* p)]
+        (set! (.-lastIndex re) 0)
+        (loop [m (.exec re text)]
+          (when m
+            (if (well-formed-sha256-hex? (aget m 1))
+              (swap! well inc)
+              (swap! bad inc))
+            (recur (.exec re text))))))
+    {:well-formed @well :malformed @bad}))
+
+(let [_ (check-fixed-vector)
+      _ (check-manifest)
+      {:keys [well-formed malformed]} (corpus-sha256-counts)]
+  (println (str "corpus :law.text/sha256 values: " well-formed " well-formed, "
+                malformed " not well-formed"))
+  (when (pos? malformed)
+    (println (str "NOTE: " malformed " :law.text/sha256 value(s) are not 64-hex digests "
+                  "and cannot be expressed as the CID defined here.")))
+  (if (seq @problems)
+    (do (binding [*out* *err*]
+          (println (str "FAIL -- " (count @problems) " problem(s):"))
+          (doseq [p @problems] (println (str "  - " p))))
+        (set! (.-exitCode js/process) 1))
+    (println "OK")))

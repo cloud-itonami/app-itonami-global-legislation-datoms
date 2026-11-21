@@ -67,6 +67,17 @@
 
 全文が要るときは、その dataset を clone して `datalad get <path>` し、`:law.text/sha256` で照合します。
 
+### CID manifest — 投影ファイルの Yataverse 識別子
+
+`data/`（`data/corpus/` と `data/seed/` を含む配下全部）と `schema/` のコミット済みファイルごとに、`storage/cid-manifest.edn` が `:path` / `:bytes` / `:sha256`（hex）/ `:cid` の行を持ちます。`:cid` は CIDv1・codec `raw`（0x55）・multihash sha2-256・multibase base32 小文字（パディングなし、`b` 接頭辞）で、中身は `0x01 0x55 0x12 0x20 || sha256(ファイル)` です。これは単一 raw ブロックの識別子であり、そのサイズのブロックが何らかのネットワークで受け入れられるか・取得できるかについては何も述べません。何もアップロード・pin・fetch しません。
+
+```bash
+nbb bin/verify-cid-manifest.cljk   # 全行を再計算 + 行の陳腐化・欠落・未登録ファイルを検出したら失敗
+nbb test/cid_manifest_contract.cljk  # 上の独立した再検証 + フィクスチャでの正・負コントロール
+```
+
+検証スクリプト内の純粋関数 `cid-of-digest-hex` は hex の sha256 をその CID に変換します。corpus の `:law.text/sha256` 値が何件整形式（64 hex 文字）で CID 化可能か・何件そうでないかも報告だけします（失敗にはしません）。法令本文そのものはこの repository に無いので、そこから導いた CID はアドレスであって、バイトがどこかに存在する証拠ではありません。corpus に CID 属性は足さず、`data/` は再生成しません。
+
 ## 現在の coverage(2026-07-10)
 
 | entity | 件数 | 備考 |

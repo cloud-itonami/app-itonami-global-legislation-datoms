@@ -1,0 +1,193 @@
+#!/usr/bin/env nbb
+;; Contract for storage/cid-manifest.edn + bin/verify-cid-manifest.cljk
+;; (AWAI-3620).
+;;
+;; Two layers, mirroring test/query_contract.cljk (asserts, including the
+;; negative paths):
+;;
+;;   1. Native re-verification of the committed tree with an independent
+;;      implementation (string-building base32 here vs arithmetic base32 in
+;;      the script, both against node crypto): every manifest row recomputes,
+;;      every file under data/ and schema/ is listed, the fixed vector holds,
+;;      and the corpus :law.text/sha256 counts match data/quality-report.edn.
+;;   2. Fixture-tree runs of the REAL bin/verify-cid-manifest.cljk as a
+;;      subprocess: the positive case exits 0, and each negative control --
+;;      (a) an altered :cid, (b) a dropped row, (c) an unlisted new file --
+;;      exits non-zero with a message naming the cause.
+;;
+;; Run: nbb test/cid_manifest_contract.cljk
+;; (kbb runs it too; it needs no Datascript, no source datasets, no network.)
+(ns cid-manifest-contract
+  (:require [kotoba.lang.text :as str]
+            [edamame.core :as edn]))
+
+(def fs (js/require "fs"))
+(def crypto (js/require "crypto"))
+(def node-path (js/require "path"))
+(def os (js/require "os"))
+(def child (js/require "child_process"))
+
+(def script-path (.resolve node-path "bin/verify-cid-manifest.cljk"))
+(def nbb-bin (or (aget (.-env js/process) "NBB_BIN") "nbb"))
+(def fixed-vector-cid "bafkreifzjut3te2nhyekklss27nh3k72ysco7y32koao5eei66wof36n5e")
+
+(defn slurp* [p] (.toString (.readFileSync fs p)))
+(defn read-edn [p] (edn/parse-string (slurp* p)))
+(defn sha256-hex [buf] (.digest (.update (.createHash crypto "sha256") buf) "hex"))
+
+(defn well-formed? [s]
+  (and (string? s) (boolean (re-matches #"[0-9a-fA-F]{64}" s))))
+
+(defn hex->bytes* [hex]
+  (mapv #(js/parseInt (apply str %) 16) (partition 2 hex)))
+
+(defn base32* [bytes]
+  (let [alpha "abcdefghijklmnopqrstuvwxyz234567"
+        bits (apply str (map (fn [b]
+                               (let [s (.toString b 2)]
+                                 (str (apply str (repeat (- 8 (count s)) "0")) s)))
+                             bytes))
+        pad (mod (- 5 (mod (count bits) 5)) 5)
+        bits (str bits (apply str (repeat pad "0")))]
+    (apply str (map #(nth alpha (js/parseInt (apply str %) 2))
+                    (partition 5 bits)))))
+
+(defn cid-of-digest-hex* [hex]
+  (assert (well-formed? hex) (str "test oracle got a malformed digest: " (pr-str hex)))
+  (str "b" (base32* (into [0x01 0x55 0x12 0x20] (hex->bytes* hex)))))
+
+(defn walk-files [dir]
+  (let [entries (array-seq (.readdirSync fs dir #js {:withFileTypes true}))]
+    (sort (mapcat (fn [e]
+                    (let [p (.join node-path dir (.-name e))]
+                      (if (.isDirectory e) (walk-files p) [p])))
+                  entries))))
+
+(defn scan-sha256-values [corpus-dir]
+  (let [re (js/RegExp. ":law\\.text/sha256\\s+\"([^\"]*)\"" "g")
+        well (atom 0)
+        bad (atom [])]
+    (doseq [p (walk-files corpus-dir) :when (.endsWith p ".edn")]
+      (let [text (slurp* p)]
+        (set! (.-lastIndex re) 0)
+        (loop [m (.exec re text)]
+          (when m
+            (let [v (aget m 1)]
+              (if (well-formed? v) (swap! well inc) (swap! bad conj v)))
+            (recur (.exec re text))))))
+    {:well-formed @well :malformed @bad}))
+
+;; ── layer 1: the committed tree, natively ─────────────────────────────────
+(let [{:keys [manifest/rows]} (read-edn "storage/cid-manifest.edn")
+      on-disk (mapcat walk-files ["data" "schema"])]
+  (assert (seq rows) "cid manifest has no rows")
+  (assert (= (count rows) (count on-disk))
+          (str "manifest lists " (count rows) " rows but data/ + schema/ hold "
+               (count on-disk) " files"))
+  (assert (= (count rows) (count (distinct (map :path rows))))
+          "cid manifest lists a :path more than once")
+  (assert (= (into #{} (map :path rows)) (into #{} on-disk))
+          "cid manifest :path set differs from the files under data/ + schema/")
+  (doseq [{:keys [path bytes sha256 cid]} rows]
+    (let [buf (.readFileSync fs path)]
+      (assert (= (.-length buf) bytes) (str "native recompute: :bytes differs for " path))
+      (assert (= (sha256-hex buf) sha256) (str "native recompute: :sha256 differs for " path))
+      (assert (= (cid-of-digest-hex* (sha256-hex buf)) cid)
+              (str "native recompute: :cid differs for " path))))
+  (assert (= (cid-of-digest-hex* "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9")
+             fixed-vector-cid)
+          "native recompute: fixed vector mismatch")
+  (let [{:keys [well-formed malformed]} (scan-sha256-values "data/corpus")
+        expected (-> (read-edn "data/quality-report.edn") :quality/corpus :corpus/laws-with-text)]
+    (assert (pos? well-formed) "no :law.text/sha256 values found in data/corpus/")
+    (assert (empty? malformed)
+            (str (count malformed) " :law.text/sha256 value(s) are not 64-hex digests: "
+                 (str/join ", " (take 5 malformed))))
+    (assert (= well-formed expected)
+            (str "well-formed :law.text/sha256 count " well-formed
+                 " does not match :corpus/laws-with-text " expected
+                 " in data/quality-report.edn")))
+  (println (str "layer 1 (committed tree): " (count rows) " rows recomputed, "
+                "fixed vector holds")))
+
+;; ── layer 2: the real script against fixture trees ────────────────────────
+(defn write-file! [root rel content]
+  (let [p (.join node-path root rel)]
+    (.mkdirSync fs (.dirname node-path p) #js {:recursive true})
+    (.writeFileSync fs p content)))
+
+(defn build-fixture! [root]
+  (.rmSync fs root #js {:recursive true :force true})
+  ;; data/corpus/x.edn carries one well-formed and one malformed value so the
+  ;; informational report path is exercised on every fixture run.
+  (write-file! root "data/corpus/x.edn"
+               (str "[{:law/key \"fx:1\" :law.text/sha256 "
+                    "\"b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9\"}\n"
+                    " {:law/key \"fx:2\" :law.text/sha256 \"not-a-digest\"}]\n"))
+  (write-file! root "data/a.edn" "{:fixture 1}\n")
+  (write-file! root "data/sub/b.edn" "{:fixture 2}\n")
+  (write-file! root "schema/c.edn" "{:fixture 3}\n")
+  (let [rows (for [p ["data/a.edn" "data/sub/b.edn" "data/corpus/x.edn" "schema/c.edn"]]
+               (let [buf (.readFileSync fs (.join node-path root p))
+                     h (sha256-hex buf)]
+                 (str "  {:path \"" p "\" :bytes " (.-length buf)
+                      " :sha256 \"" h "\" :cid \"" (cid-of-digest-hex* h) "\"}")))]
+    (write-file! root "storage/cid-manifest.edn"
+                 (str "{:manifest/version 1,\n :manifest/rows\n [\n"
+                      (str/join "\n" rows)
+                      "\n ]}\n"))))
+
+(defn run-script [root]
+  (let [res (.spawnSync child nbb-bin #js [script-path]
+                        #js {:cwd root :encoding "utf8" :timeout 240000})]
+    {:status (.-status res)
+     :output (str (.-stdout res) (.-stderr res))}))
+
+(def fixture-root (.mkdtempSync fs (.join node-path (.tmpdir os) "cid-fixture-")))
+
+(try
+  (let [root fixture-root]
+    ;; positive: exit 0 and all three report lines
+    (build-fixture! root)
+    (let [{:keys [status output]} (run-script root)]
+      (assert (= 0 status) (str "fixture positive run exited " status ": " output))
+      (assert (str/includes? output "manifest rows: 4") "positive run must print 4 rows")
+      (assert (str/includes? output "fixed vector: OK") "positive run must print fixed-vector OK")
+      (assert (str/includes? output "1 well-formed, 1 not well-formed")
+              "positive run must print the corpus sha256 report"))
+    ;; negative (a): one manifest :cid altered
+    (build-fixture! root)
+    (let [mp (.join node-path root "storage/cid-manifest.edn")
+          before (slurp* mp)
+          after (.replace before ":cid \"bafkrei" ":cid \"bafkreia")]
+      (assert (not= before after) "fixture mutation (a) did not change the manifest")
+      (.writeFileSync fs mp after))
+    (let [{:keys [status output]} (run-script root)]
+      (assert (not= 0 status) "altered :cid must exit non-zero")
+      (assert (str/includes? output "stale row") "altered :cid must say 'stale row'")
+      (assert (str/includes? output ":cid") "altered :cid must name the :cid field"))
+    ;; negative (b): one listed file removed from the manifest
+    (build-fixture! root)
+    (let [mp (.join node-path root "storage/cid-manifest.edn")
+          lines (.split (slurp* mp) "\n")
+          kept (filter #(.includes % "schema/c.edn") lines)]
+      (assert (= 1 (count kept)) "fixture manifest must hold the schema row to drop")
+      (.writeFileSync fs mp (str/join "\n" (remove #(.includes % "schema/c.edn") lines))))
+    (let [{:keys [status output]} (run-script root)]
+      (assert (not= 0 status) "dropped row must exit non-zero")
+      (assert (str/includes? output "not listed") "dropped row must say 'not listed'")
+      (assert (str/includes? output "schema/c.edn") "dropped row must name schema/c.edn"))
+    ;; negative (c): a new file under data/ without a row
+    (build-fixture! root)
+    (write-file! root "data/unlisted.edn" "{:surprise true}\n")
+    (let [{:keys [status output]} (run-script root)]
+      (assert (not= 0 status) "unlisted file must exit non-zero")
+      (assert (str/includes? output "not listed") "unlisted file must say 'not listed'")
+      (assert (str/includes? output "data/unlisted.edn") "unlisted file must name the path"))
+    (println "layer 2 (fixture runs): positive + 3 negative controls behave"))
+  (catch :default e
+    (throw e))
+  (finally
+    (.rmSync fs fixture-root #js {:recursive true :force true})))
+
+(println {:status :ok})
