@@ -1,0 +1,241 @@
+#!/usr/bin/env nbb
+;; AWAI-3822: iso3166-family to jurisdiction roster matchup check.
+;;
+;; License: pending the rights-holder decision (owner decision awaited;
+;; see the README section and the AWAI-3822 PR). No LICENSE file is
+;; added by this change. data/ stays under each source's own terms.
+;;
+;; Recomputes the matchup declared in coverage/iso3166-family-roster.edn
+;; from the dated listing receipt it points at plus the committed catalog
+;; (data/datascript-tx.edn), and fails when the roster is stale, when a
+;; listed member is uncovered, or when the receipt date is missing.
+;; Reads files only; writes, uploads, pins, fetches nothing.
+;;
+;; The family listing itself is a live GitHub org-repo listing (REST API
+;; only, a handful of dated calls). Owner approval for treating that
+;; listing as a source, the listing date (UTC), the account/token class,
+;; and the exact query are recorded in AWAI-3822 before fetching -- this
+;; script never fetches. A rerun is a new dated receipt plus a new roster
+;; version, never an in-place silent update: a count change breaks this
+;; check by design instead of drifting downstream.
+;;
+;; What it checks:
+;;   1. The roster points at a receipt file that exists, parses, and
+;;      carries a non-blank :receipt/date-utc. A missing date fails,
+;;      naming the receipt.
+;;   2. Every member named in the receipt has exactly one roster row
+;;      (a listed member with no row is UNCOVERED and fails, naming it),
+;;      and no roster row names a member outside the receipt (a stale row
+;;      fails, naming it). Row count must equal receipt family count.
+;;   3. Every row's :member/alpha3 must equal the mechanical base of the
+;;      member name (first segment after the family prefix, upper-cased).
+;;      A row whose counterpart is :no-counterpart must carry a non-blank
+;;      :reason (dropped, renamed, merged, never a jurisdiction, or a
+;;      catalog gap stated as one). Any other counterpart must be a
+;;      :jurisdiction :code present in the committed catalog -- an
+;;      invented counterpart code fails, naming the row.
+;;   4. The catalog is recounted from data/datascript-tx.edn: the total
+;;      :jurisdiction entity count and the catalog file sha256 must match
+;;      the receipt. A rebuilt or edited catalog without a new dated
+;;      receipt fails, naming the field.
+;;   5. ISO country names are never held here (codes only: 2- and
+;;      3-character codes such as USA, JPN, EU, UN). A roster row carrying
+;;      a name field fails, naming the row.
+;;
+;; What it does NOT prove (printed on every run): the receipt is one dated
+;; listing, not a standing source. Members that appear or disappear on the
+;; org after the receipt date are invisible until the next dated rerun.
+;; Sub-repo members (agency/topic scope, e.g. usa-epa) map to their base
+;; country jurisdiction; that is a scoping statement, not a claim that
+;; the sub-repo is itself a jurisdiction.
+;;
+;; D6 (vocabulary home, AWAI-3618 backlog) is still open, so the roster
+;; and its receipt live next to the verifier (coverage/) until D6 lands;
+;; recorded as the placement decision, not waited on.
+;;
+;; Run: nbb bin/verify-iso3166-family-roster.cljk [root]
+;;   root defaults to ".". A temp copy of the tree can be checked by
+;;   passing its path; the committed inputs are never modified.
+(ns verify-iso3166-family-roster
+  (:require [edamame.core :as edn]
+            [clojure.string :as str]))
+
+(def fs (js/require "fs"))
+(def crypto (js/require "crypto"))
+(def node-path (js/require "path"))
+
+(def root (or (first *command-line-args*) "."))
+(def roster-path (.join node-path root "coverage/iso3166-family-roster.edn"))
+(def catalog-path (.join node-path root "data/datascript-tx.edn"))
+
+(def member-prefix "app-itonami-cloud-itonami-iso3166-")
+
+(def problems (atom []))
+(defn bad! [& xs]
+  (swap! problems conj (str/join " " (map str xs))))
+
+(defn slurp* [p]
+  (try (.toString (.readFileSync fs p))
+       (catch js/Error e
+         (bad! "cannot read" p ":" (.-message e))
+         nil)))
+
+(defn sha256-hex [buf]
+  (.digest (.update (.createHash crypto "sha256") buf) "hex"))
+
+(defn parse-or-nil [text p]
+  (try (edn/parse-string text)
+       (catch js/Error e
+         (bad! "cannot parse" p ":" (.-message e))
+         nil)))
+
+(defn load-edn [p]
+  (let [text (slurp* p)]
+    (when text (parse-or-nil text p))))
+
+(defn base-of
+  "Mechanical base code of a family member name: first segment after
+  the family prefix, upper-cased. Anything not under the prefix
+  has no base."
+  [member-name]
+  (when (and (string? member-name) (.startsWith member-name member-prefix))
+    (let [seg (first (str/split (.slice member-name (.-length member-prefix))
+                                #"-"))]
+      (when (seq seg) (str/upper-case seg)))))
+
+(defn check-receipt-date [receipt receipt-rel]
+  (when (str/blank? (str (:receipt/date-utc receipt)))
+    (bad! "listing receipt date missing in" receipt-rel
+          "(reruns produce a new dated receipt; the date is never optional)")))
+
+(defn check-receipt-members [receipt receipt-rel]
+  (let [members (:receipt/members receipt)]
+    (cond
+      (not (vector? members))
+      (do (bad! "receipt holds no :receipt/members vector in" receipt-rel)
+          nil)
+      (empty? members)
+      (do (bad! "receipt names zero family members in" receipt-rel
+                "(an empty family listing is a failed listing, not an empty remainder)")
+          nil)
+      (not= (count members) (count (distinct members)))
+      (do (bad! "receipt member list has duplicates in" receipt-rel)
+          nil)
+      :else members)))
+
+(defn check-catalog [receipt receipt-rel catalog catalog-sha]
+  ;; #:jurisdiction{:code ...} reads as :jurisdiction/code keys.
+  (let [juris (filter #(and (map? %)
+                            (contains? % :jurisdiction/code)
+                            (contains? % :jurisdiction/kind))
+                      catalog)
+        n (count juris)]
+    (when (not= n (:receipt/catalog-count receipt))
+      (bad! "catalog drift: data/datascript-tx.edn holds" n
+            ":jurisdiction entities but" receipt-rel
+            "records" (:receipt/catalog-count receipt)
+            "(re-list with a new dated receipt)"))
+    (when (str/blank? (str (:receipt/catalog-sha256 receipt)))
+      (bad! "receipt records no :receipt/catalog-sha256 in" receipt-rel))
+    (when (and (:receipt/catalog-sha256 receipt)
+               (not= catalog-sha (:receipt/catalog-sha256 receipt)))
+      (bad! "catalog drift: data/datascript-tx.edn sha256 is" catalog-sha
+            "but" receipt-rel "records" (:receipt/catalog-sha256 receipt)
+            "(re-list with a new dated receipt)"))
+    {:count n :codes (into #{} (map :jurisdiction/code) juris)}))
+
+(defn check-names-absent [rows]
+  (doseq [row rows]
+    (let [member (:member row)]
+      (when (or (contains? row :name)
+                (contains? row :member/name)
+                (contains? row :jurisdiction/name))
+        (bad! "roster row for" (pr-str member)
+              "carries a name field (codes only: ISO names are never held)")))))
+
+(defn check-coverage [rows members receipt-rel codes]
+  (let [by-member (group-by :member rows)
+        matched-count (atom 0)
+        remainder-members (atom [])]
+    (doseq [[m rs] by-member]
+      (when (> (count rs) 1)
+        (bad! "roster holds" (count rs) "rows for member" (pr-str m)
+              "(one row per member)")))
+    (doseq [m members]
+      (when (nil? (get by-member m))
+        (bad! "listed member uncovered (no roster row):" (pr-str m))))
+    (doseq [row rows]
+      (when-not (contains? (set members) (:member row))
+        (bad! "stale roster row for" (pr-str (:member row))
+              "(not in" receipt-rel ")")))
+    (doseq [row rows]
+      (when (= 1 (count (get by-member (:member row))))
+        (let [member (:member row)
+              want (base-of member)
+              got (:member/alpha3 row)
+              cp (:counterpart row)]
+          (when (nil? want)
+            (bad! "roster row member" (pr-str member)
+                  "is not under the family prefix" (pr-str member-prefix)))
+          (when (and want (not= got want))
+            (bad! "roster row for" (pr-str member) "records :member/alpha3"
+                  (pr-str got) "but the mechanical base of the member name is"
+                  (pr-str want)))
+          (if (= cp :no-counterpart)
+            (if (str/blank? (str (:reason row)))
+              (bad! "roster row for" (pr-str member)
+                    "marks :no-counterpart with no :reason (dropped, renamed,"
+                    "merged, never a jurisdiction, or a stated catalog gap)")
+              (swap! remainder-members conj member))
+            (do
+              (when-not (contains? codes cp)
+                (bad! "roster row for" (pr-str member) "claims counterpart"
+                      (pr-str cp) "with no such :jurisdiction :code"
+                      "in" catalog-path))
+              (swap! matched-count inc))))))
+    (when (not= (count rows) (count members))
+      (bad! "roster holds" (count rows) "rows but" receipt-rel
+            "lists" (count members) "members (one row per member)"))
+    {:matched @matched-count :remainder (sort @remainder-members)}))
+
+(defn print-summary [members catalog-count result receipt-rel date-utc]
+  (println (str "family members (listed): " (count members)))
+  (println (str "catalog :jurisdiction entries: " catalog-count))
+  (println (str "matched: " (:matched result)))
+  (println (str "remainder (:no-counterpart): " (count (:remainder result))))
+  (doseq [m (:remainder result)]
+    (println (str "  remainder: " m)))
+  (println "uncovered members: 0 expected (every listed member must have a row).")
+  (println (str "receipt: " receipt-rel " date " date-utc))
+  (println "one dated listing: reruns produce a new dated receipt + new roster version, never an in-place silent update."))
+
+(let [roster (load-edn roster-path)]
+  (when roster
+    (let [receipt-rel (:roster/receipt roster)
+          rows (:roster/rows roster)]
+      (when (str/blank? (str receipt-rel))
+        (bad! "roster declares no :roster/receipt in" roster-path))
+      (when (not (vector? rows))
+        (bad! "roster holds no :roster/rows vector in" roster-path))
+      (when (and (string? receipt-rel) (vector? rows))
+        (let [receipt (load-edn (.join node-path root receipt-rel))]
+          (when receipt
+            (check-receipt-date receipt receipt-rel)
+            (let [members (check-receipt-members receipt receipt-rel)
+                  catalog-text (slurp* catalog-path)]
+              (when (and members catalog-text)
+                (let [catalog (parse-or-nil catalog-text catalog-path)]
+                  (when catalog
+                    (let [catalog-sha (sha256-hex (.readFileSync fs catalog-path))
+                          info (check-catalog receipt receipt-rel catalog catalog-sha)]
+                      (check-names-absent rows)
+                      (let [result (check-coverage rows members receipt-rel (:codes info))]
+                        (print-summary members (:count info) result receipt-rel
+                                       (:receipt/date-utc receipt))))))))))))))
+
+(if (seq @problems)
+  (do (binding [*out* *err*]
+        (println (str "FAIL -- " (count @problems) " problem(s):"))
+        (doseq [p @problems] (println (str "  - " p))))
+      (set! (.-exitCode js/process) 1))
+  (println "OK"))

@@ -97,6 +97,23 @@ nbb bin/verify-canonical-uri-sample.cljk /tmp/xy  # temp copy の tree に対す
 
 License: この repo で作った部分（`bin/verify-canonical-uri-sample.cljk`）の license は権利者の決定待ちです。LICENSE ファイルは足しません。`data/` は各出典の条件のままです。
 
+### iso3166-family roster（AWAI-3822）
+
+`cloud-itonami` の iso3166-family member（`cloud-itonami-iso3166-*` repo）が、legislation catalog のどの jurisdiction entry（198 件）に対応するかを、dated な対応表 `coverage/iso3166-family-roster.edn` に一 member 一行で記録します。以後の join が推測で対応付けないための表です。ingest ではなく照合だけなので、新しい live 取得はこの表を作る 1 回の日付つき listing だけで、それも毎回新しい receipt＋新しい roster 版になります（in-place の silent update はしません）。
+
+```bash
+nbb bin/verify-iso3166-family-roster.cljk          # 対応表の再計算（family 件数・catalog 件数・matched・remainder を表示）
+nbb bin/verify-iso3166-family-roster.cljk /tmp/xy  # temp copy の tree に対する照合（負コントロール用）
+```
+
+測定入力（2026-11-22 実測）: family 225 件（listing 日 2026-11-21T22:58:17Z、query `gh repo list cloud-itonami --limit 4000 --json name,visibility`、family は 225 件とも public。org 全体 1859 件のうち private 93 件は表に出さない）/ catalog `:jurisdiction` 198 件（national 189 + supranational 3 + 国際裁判所 6）/ matched 221 件 / remainder 4 件（`dnk`・`eri`・`ner`・`nld`。いずれも catalog に jurisdiction entry が無い catalog gap で、`:no-counterpart` に理由つき）。uncovered member（receipt に載っているのに対応表の行が無い）は 0 件が期待値で、あれば build が壊れます（by design）。family 件数 225 は issue の事前値（kotoba-lang 158 + network-awai 67 からの移行）と一致しました（移行の内訳自体はこの listing では検証せず、述べたものとして記録します）。
+
+出典と取得日: family の一覧は上の query の GitHub REST API listing（取得日 2026-11-21T22:58:17Z、UTC。`--limit 1000` の 2 回の take は family を一軒も含まなかったため置き換え。receipt の `:receipt/take-note` に記録）。catalog 件数は `data/datascript-tx.edn` の再計算（sha256 も receipt に記録）。ISO の国名は ISO の著作物なので表に持ちません。持つのは 2 文字・3 文字の code（`USA`、`JPN`、`EU`、`UN` など）だけで、名前が必要な場合は UN M49 の名前を使い出典を書きます（この表では名前を使わないので M49 の取得はしていません）。`cloud-itonami-iso3166-usa-epa` のような agency/topic 付き sub-repo は base 国の jurisdiction に対応付け、`:scope :sub-repo` と明記します（sub-repo 自体が jurisdiction だという主張ではありません）。
+
+D6（語彙の置き場所、AWAI-3618 backlog）はまだ open なので、roster と receipt は verifier の隣（`coverage/`）に置きます。D6 が決まるまでの既定配置です。
+
+License: この repo で作った部分（`bin/verify-iso3166-family-roster.cljk`、`coverage/iso3166-family-roster.edn`、`coverage/iso3166-family-receipt-*.edn`、この節）の license は権利者の決定待ちです。LICENSE ファイルは足しません。`data/` は各出典の条件のままです。
+
 ## 現在の coverage(2026-07-10)
 
 | entity | 件数 | 備考 |
