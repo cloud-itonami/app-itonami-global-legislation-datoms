@@ -29,3 +29,11 @@ On 2026-11-21 all 51 blocks were read back with `yataverse get` and were byte-id
 committed files, and all 51 receipts verified against their files.
 
 The law texts themselves are not in this repository and were not written.
+
+## Coverage files (added 2026-11-21, AWAI-3665)
+
+The four `coverage--*.json` files are receipts for the files under `coverage/` (52,067 bytes), written
+the same way on 2026-11-21. Their identifiers are listed in `../cid-manifest-coverage.edn`, not in
+`../cid-manifest.edn`. All four blocks were read back with `yataverse get` and were byte-identical to
+the committed files, and each receipt passed `verify-receipt --file ... --kind block`. They have the
+same `state` 1, `storeClass` 1 and `retentionUntil` 0 as the others.

@@ -1,0 +1,24 @@
+;; storage/cid-manifest-coverage.edn -- Yataverse content identifiers for the committed files under
+;; coverage/. Same identifier form as storage/cid-manifest.edn (CIDv1, raw, sha2-256, base32). Kept in a
+;; separate file because bin/verify-cid-manifest.cljk checks storage/cid-manifest.edn against data/ and
+;; schema/ only. These rows describe the files as of 2026-11-21 (AWAI-3665); no verifier re-checks them,
+;; so a later edit to a coverage file makes its row and receipt stale.
+{:manifest/version 1
+ :files
+ [
+  {:path "coverage/eli-coverage.edn"
+   :bytes 6087
+   :sha256 "91177683939bfb01d321be17923bc81597224dc99e67640172fcd2238db1ec83"
+   :cid "bafkreierc53ihe437ma5gin6c6jdxsavs4re3sm6m5sac4x42iry3mpmqm"}
+  {:path "coverage/external-joins.edn"
+   :bytes 2313
+   :sha256 "3fe217e2796c1df74121a7ab08deed7901455548163957f9ef685118ec94bc3c"
+   :cid "bafkreib74il6e6lmdx3ucinhvmen53lzafcvksawhfl7t33ikemozff4hq"}
+  {:path "coverage/public-identifiers.edn"
+   :bytes 39157
+   :sha256 "4670e1e3df17316e3754380cbdff41965f81c4fc07f402c4bfda7ba89998252d"
+   :cid "bafkreicgodq6hxyxgfxdovbybs676qmwl6a4j7ah6qbmjp62poujtgbffu"}
+  {:path "coverage/registry.edn"
+   :bytes 4510
+   :sha256 "c6d6674c99224b1df0b5b310eef531e991b33dbb5c41d6f92426f744ba46d72b"
+   :cid "bafkreigg2ztuzgjcjmo7bnntcdxpkmpjsgzt3o24ihlpsjbg65clurwxfm"}]}
