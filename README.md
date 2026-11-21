@@ -78,6 +78,25 @@ nbb test/cid_manifest_contract.cljk  # 上の独立した再検証 + フィク�
 
 検証スクリプト内の純粋関数 `cid-of-digest-hex` は hex の sha256 をその CID に変換します。corpus の `:law.text/sha256` 値が何件整形式（64 hex 文字）で CID 化可能か・何件そうでないかも報告だけします（失敗にはしません）。法令本文そのものはこの repository に無いので、そこから導いた CID はアドレスであって、バイトがどこかに存在する証拠ではありません。corpus に CID 属性は足さず、`data/` は再生成しません。
 
+### canonical-URI sample check（AWAI-3807）
+
+corpus の正準 URI（`:law/url`、95,194 件）が、コミット済みの sha256 アドレスつき entry path（`data/corpus/*/laws-*.edn`。各 shard の sha256 は `data/corpus/manifest.edn` に pin）に解決することを、固定サンプルで確かめます。全文の再取得はしません。
+
+```bash
+nbb bin/verify-canonical-uri-sample.cljk          # sample の照合（seed 3807、25 件）
+nbb bin/verify-canonical-uri-sample.cljk /tmp/xy  # temp copy の tree に対する照合（負コントロール用）
+```
+
+サンプル（seed + 25 件の URI・shard・key の表）はスクリプト内に記録され、実行のたびに seed から再導出して一致を確かめます。毎回 sample の件数と seed、一致件数、そして「sample only（サンプル外については何も述べない）」を表示します。サンプル内に無い entry の有無・正しさについては何も述べません。サンプル拡大は別 issue です。
+
+測定入力（2026-11-22 実測）: `data/` 50 files / 195,884,229 bytes（`data/corpus/` 43 files + 他 7）。root に LICENSE / NOTICE はありません（per-source の属性のみ）。
+
+出典と取得日: 全文の所在は `sources.lock.edn` に lock された 4 DataLad dataset（`etzhayyim/jp.go.e-gov.elaws`、`etzhayyim/eu.europa.eur-lex`、`etzhayyim/uk.gov.legislation`、`etzhayyim/gov.govinfo.bulkdata`。lock as-of 2026-08-04）。この検査はコミット済み投影だけを読み、新しい live 取得はしません。全文バイトの照合は外部 dataset の側の仕事で、ここでは locator（dataset・path／archive+entry・sha256・bytes）の整形式と dataset の lock 一致だけを見ます。本文を持たない法令（EU の大半など）は欠落ではなく既知の範囲として数えます。
+
+キー綴り（`:law/url`、`:law/key`、`:law.text/*`）は収集第 2 波の energy repo 側の属性名 crosswalk（O1）と共有なので、依存として記録します（待ちません）。
+
+License: この repo で作った部分（`bin/verify-canonical-uri-sample.cljk`）の license は権利者の決定待ちです。LICENSE ファイルは足しません。`data/` は各出典の条件のままです。
+
 ## 現在の coverage(2026-07-10)
 
 | entity | 件数 | 備考 |

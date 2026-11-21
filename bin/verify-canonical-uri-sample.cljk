@@ -1,0 +1,306 @@
+#!/usr/bin/env nbb
+;; AWAI-3807: canonical-URI to sha256 entry-path sample check.
+;;
+;; License: pending the rights-holder decision (owner decision awaited;
+;; see the README section and the AWAI-3807 PR). No LICENSE file is
+;; added by this change. data/ stays under each source's own terms.
+;;
+;; Proves by fixed sample that the corpus's canonical URIs (:law/url)
+;; resolve to the committed sha256-addressed entry paths (laws shards whose
+;; bytes are pinned in data/corpus/manifest.edn). Reads files only; writes,
+;; uploads, pins, fetches nothing.
+;;
+;; What it checks:
+;;   1. The recorded sample re-derives from SAMPLE-SEED over the sorted
+;;      universe of all :law/url values in the laws shards. A changed seed,
+;;      size, list entry, or corpus breaks this, naming the cause.
+;;   2. Every sampled shard recomputes: its sha256 (and byte length) must
+;;      match the data/corpus/manifest.edn row. A mismatch fails, naming
+;;      the path and the field.
+;;   3. Every sampled URI resolves to exactly one :law entity, in the
+;;      recorded shard, with the recorded :law/key. A missing entry or a
+;;      moved entry fails, naming it.
+;;   4. No sampled entry dangles: when it carries a :law.text locator, the
+;;      locator must name the shard's own locked dataset, a present address
+;;      (:law.text/path, or :law.text/archive + :law.text/entry for the US
+;;      bulkdata shape), a well-formed 64-hex sha256, and a positive byte
+;;      count. Anything else fails, naming the URI and the field. Carrying
+;;      no locator at all is legitimate -- only 31,970 of the 95,194 laws
+;;      hold full text (EU keeps current directives only, the US keeps
+;;      18,066 of 18,154, JP all but 13 upstream-404s) -- and is counted,
+;;      not failed.
+;;
+;; What it does NOT prove (printed on every run): this is a sample of
+;; SAMPLE-SIZE out of ~95k laws. It finds nothing about entries outside
+;; the sample. Enlarging the sample is a separate issue. The :law.text
+;; sha256 addresses full text that lives in the locked external DataLad
+;; datasets, not in this repository, so a well-formed locator is an
+;; address, not evidence that the bytes exist anywhere.
+;;
+;; Key spelling (:law/url, :law/key, :law.text/*) is shared with the
+;; attribute-name crosswalk (collection wave 2, energy repo, "O1");
+;; recorded as a dependency, not waited on.
+;;
+;; Run: nbb bin/verify-canonical-uri-sample.cljk [root]
+;;   root defaults to ".". A temp copy of the tree can be checked by
+;;   passing its path; the committed inputs are never modified.
+(ns verify-canonical-uri-sample
+  (:require [edamame.core :as edn]
+            [clojure.string :as str]))
+
+(def fs (js/require "fs"))
+(def crypto (js/require "crypto"))
+(def node-path (js/require "path"))
+
+(def root (or (first *command-line-args*) "."))
+(def manifest-path (.join node-path root "data/corpus/manifest.edn"))
+(def lock-path (.join node-path root "sources.lock.edn"))
+(def corpus-dir (.join node-path root "data/corpus"))
+
+;; Asserted constants. The sample below is indices
+;; [56202 40697 17300 27207 71600 7079 44464 50005 8248 55635 44858 77661
+;;  16768 88767 84990 363 24658 87395 33864 93797 39816 25305 88308 38067
+;;  95170] of the sorted :law/url universe (95,194 values), drawn with the
+;; LCG below from SAMPLE-SEED.
+(def sample-seed 3807)
+(def sample-size 25)
+
+(def sample
+  [{:uri "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32023R0949" :shard "data/corpus/eu.europa.eur-lex/laws-002.edn" :key "eu-celex:32023R0949"}
+   {:uri "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32014R1098" :shard "data/corpus/eu.europa.eur-lex/laws-002.edn" :key "eu-celex:32014R1098"}
+   {:uri "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:31978D0411" :shard "data/corpus/eu.europa.eur-lex/laws-000.edn" :key "eu-celex:31978D0411"}
+   {:uri "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32003M3206" :shard "data/corpus/eu.europa.eur-lex/laws-001.edn" :key "eu-celex:32003M3206"}
+   {:uri "https://laws.e-gov.go.jp/law/423M60000400035" :shard "data/corpus/jp.go.e-gov.elaws/laws-000.edn" :key "jp-elaws:423M60000400035"}
+   {:uri "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:12016E267" :shard "data/corpus/eu.europa.eur-lex/laws-000.edn" :key "eu-celex:12016E267"}
+   {:uri "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32017D1868" :shard "data/corpus/eu.europa.eur-lex/laws-002.edn" :key "eu-celex:32017D1868"}
+   {:uri "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32020Q0727(01)" :shard "data/corpus/eu.europa.eur-lex/laws-002.edn" :key "eu-celex:32020Q0727(01)"}
+   {:uri "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:21997D0710(11)" :shard "data/corpus/eu.europa.eur-lex/laws-000.edn" :key "eu-celex:21997D0710(11)"}
+   {:uri "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32023M11061" :shard "data/corpus/eu.europa.eur-lex/laws-002.edn" :key "eu-celex:32023M11061"}
+   {:uri "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32017M8515" :shard "data/corpus/eu.europa.eur-lex/laws-002.edn" :key "eu-celex:32017M8515"}
+   {:uri "https://www.congress.gov/bill/119th-congress/house-bill/4200" :shard "data/corpus/gov.govinfo.bulkdata/laws-000.edn" :key "us-congress:119-hr4200"}
+   {:uri "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:31972R2760" :shard "data/corpus/eu.europa.eur-lex/laws-000.edn" :key "eu-celex:31972R2760"}
+   {:uri "https://www.congress.gov/bill/119th-congress/senate-bill/3857" :shard "data/corpus/gov.govinfo.bulkdata/laws-000.edn" :key "us-congress:119-s3857"}
+   {:uri "https://www.congress.gov/bill/119th-congress/hres/479" :shard "data/corpus/gov.govinfo.bulkdata/laws-000.edn" :key "us-congress:119-hres479"}
+   {:uri "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:11957E095" :shard "data/corpus/eu.europa.eur-lex/laws-000.edn" :key "eu-celex:11957E095"}
+   {:uri "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32000M1956" :shard "data/corpus/eu.europa.eur-lex/laws-001.edn" :key "eu-celex:32000M1956"}
+   {:uri "https://www.congress.gov/bill/119th-congress/senate-bill/2620" :shard "data/corpus/gov.govinfo.bulkdata/laws-000.edn" :key "us-congress:119-s2620"}
+   {:uri "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32010A1222(01)" :shard "data/corpus/eu.europa.eur-lex/laws-001.edn" :key "eu-celex:32010A1222(01)"}
+   {:uri "https://www.legislation.gov.uk/ukpga/1991/40" :shard "data/corpus/uk.gov.legislation/laws-000.edn" :key "uk-legislation:ukpga/1991/40"}
+   {:uri "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32014L0080" :shard "data/corpus/eu.europa.eur-lex/laws-001.edn" :key "eu-celex:32014L0080"}
+   {:uri "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32001D0866" :shard "data/corpus/eu.europa.eur-lex/laws-001.edn" :key "eu-celex:32001D0866"}
+   {:uri "https://www.congress.gov/bill/119th-congress/senate-bill/3443" :shard "data/corpus/gov.govinfo.bulkdata/laws-000.edn" :key "us-congress:119-s3443"}
+   {:uri "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32013D1030(01)" :shard "data/corpus/eu.europa.eur-lex/laws-001.edn" :key "eu-celex:32013D1030(01)"}
+   {:uri "https://www.legislation.gov.uk/ukpga/2026/12" :shard "data/corpus/uk.gov.legislation/laws-000.edn" :key "uk-legislation:ukpga/2026/12"}])
+
+(def problems (atom []))
+(defn bad! [& xs]
+  (swap! problems conj (str/join " " (map str xs))))
+
+(defn slurp* [p]
+  (try (.toString (.readFileSync fs p))
+       (catch js/Error e
+         (bad! "cannot read" p ":" (.-message e))
+         nil)))
+
+(defn sha256-hex [buf]
+  (.digest (.update (.createHash crypto "sha256") buf) "hex"))
+
+(defn well-formed-sha? [s]
+  (and (string? s) (boolean (re-matches #"[0-9a-fA-F]{64}" s))))
+
+;; LCG (Numerical Recipes). All intermediates stay below 2^53, so the
+;; double arithmetic is exact. The full 32-bit state feeds the index:
+;; (quot state 65536) only spans [0,65535], which mod U would bias.
+(defn next-state [s] (mod (+ (* 1664525 s) 1013904223) 4294967296))
+
+(defn pick-indices [seed n u]
+  (loop [s seed acc [] seen #{}]
+    (if (= (count acc) n)
+      acc
+      (let [s2 (next-state s)
+            i (mod s2 u)]
+        (if (contains? seen i)
+          (recur s2 acc seen)
+          (recur s2 (conj acc i) (conj seen i)))))))
+
+(defn laws-shards []
+  (sort (mapcat (fn [ds]
+                  (let [dir (.join node-path corpus-dir ds)]
+                    (->> (array-seq (.readdirSync fs dir))
+                         (map #(.toString %))
+                         (filter #(and (.startsWith % "laws-")
+                                       (.endsWith % ".edn")))
+                         (map #(.join node-path dir %)))))
+                (try (->> (array-seq (.readdirSync fs corpus-dir
+                                                  #js {:withFileTypes true}))
+                           (filter #(.isDirectory %))
+                           (map #(.-name %)))
+                     (catch js/Error e
+                       (bad! "cannot list" corpus-dir ":" (.-message e))
+                       [])))))
+
+(defn dataset-of
+  "Dataset name: the second-to-last segment of a shard path, so both
+  root-joined paths and the recorded root-independent form work."
+  [shard-path]
+  (let [segs (str/split shard-path #"/")]
+    (nth segs (- (count segs) 2) nil)))
+
+(defn parse-or-nil [text p]
+  (try (edn/parse-string text)
+       (catch js/Error e
+         (bad! "cannot parse" p ":" (.-message e))
+         nil)))
+
+(defn recorded-form
+  "Shard path as recorded in the sample and the manifest
+  (root-independent data/corpus/<dataset>/laws-NNN.edn)."
+  [full-path]
+  (.join node-path "data/corpus" (.relative node-path corpus-dir full-path)))
+
+(let [manifest-text (slurp* manifest-path)
+      lock-text (slurp* lock-path)]
+  (when (and manifest-text lock-text)
+    (let [manifest (parse-or-nil manifest-text manifest-path)
+          lock (parse-or-nil lock-text lock-path)]
+      (when (and manifest lock)
+        (let [manifest-rows (into {} (map (juxt :path identity))
+                                  (:corpus/shards manifest))
+              allowed (into #{}
+                            (comp (filter #(= (:source/consumed-by %) :corpus))
+                                  (map :repository)
+                                  (filter string?)
+                                  (map #(last (str/split % #"/"))))
+                            (:sources lock))
+              scanned (laws-shards)
+              by-uri (atom {})]
+          (doseq [full scanned]
+            (let [buf (try (.readFileSync fs full)
+                           (catch js/Error e
+                             (bad! "cannot read" full ":" (.-message e))
+                             nil))]
+              (when buf
+                (let [parsed (parse-or-nil (.toString buf) full)]
+                  (when parsed
+                    (let [rec (recorded-form full)]
+                      (doseq [e (if (vector? parsed) parsed [parsed])]
+                        (when (and (map? e) (string? (:law/url e)))
+                          (when (contains? @by-uri (:law/url e))
+                            (bad! "duplicate :law/url"
+                                  (pr-str (:law/url e)) "also in" full))
+                          (swap! by-uri assoc (:law/url e)
+                                 {:shard rec
+                                  :key (:law/key e)
+                                  :entity e})))))))))
+          (let [universe (vec (sort (keys @by-uri)))
+                u (count universe)]
+            ;; 1. The recorded sample must re-derive from the seed.
+            (if (pos? u)
+              (let [expected (mapv #(nth universe %)
+                                   (pick-indices sample-seed sample-size u))
+                    recorded (mapv :uri sample)]
+                (when (not= (count sample) sample-size)
+                  (bad! "recorded sample holds" (count sample)
+                        "entries but sample-size is" sample-size))
+                (when (not= expected recorded)
+                  (bad! "recorded sample does not match the seed derivation"
+                        (str "(seed " sample-seed ") over " u " canonical URIs:")
+                        "re-derive with the LCG in this script; a changed seed,"
+                        "changed list entry, or changed corpus breaks this")))
+              (bad! "no :law/url values found in" corpus-dir))
+            ;; 2. Every sampled shard recomputes against the manifest.
+            (doseq [shard (sort (distinct (map :shard sample)))]
+              (let [row (get manifest-rows shard)
+                    full (.join node-path root shard)]
+                (if (nil? row)
+                  (bad! "entry path" shard "has no row in" manifest-path)
+                  (let [buf (try (.readFileSync fs full)
+                                 (catch js/Error e
+                                   (bad! "cannot read" full ":"
+                                         (.-message e))
+                                   nil))]
+                    (when buf
+                      (let [actual-sha (sha256-hex buf)
+                            actual-bytes (.-length buf)]
+                        (when (not= actual-sha (:sha256 row))
+                          (bad! "sha256 mismatch for" shard ": file is"
+                                actual-sha "but" manifest-path "claims"
+                                (:sha256 row)))
+                        (when (not= actual-bytes (:bytes row))
+                          (bad! "byte length mismatch for" shard ": file has"
+                                actual-bytes "but" manifest-path "records"
+                                (:bytes row)))))))))
+            ;; 3-4. Resolve each sampled URI and check its entry.
+            (let [matched (atom 0)
+                  no-text (atom 0)]
+              (doseq [{:keys [uri shard key]} sample]
+                (let [hit (get @by-uri uri)]
+                  (cond
+                    (nil? hit)
+                    (bad! "sampled canonical URI has no :law entry"
+                          "(missing entry):" (pr-str uri))
+
+                    (not= (:shard hit) shard)
+                    (bad! "sampled URI" (pr-str uri) "resolved to"
+                          (:shard hit) "but the recorded entry path is" shard)
+
+                    :else
+                    (do
+                      (when (not= (:key hit) key)
+                        (bad! "sampled URI" (pr-str uri)
+                              "resolved to :law/key" (pr-str (:key hit))
+                              "but the recorded key is" (pr-str key)))
+                      (let [e (:entity hit)
+                            ds (:law.text/dataset e)
+                            tp (:law.text/path e)
+                            ar (:law.text/archive e)
+                            en (:law.text/entry e)
+                            dg (:law.text/sha256 e)
+                            by (:law.text/bytes e)
+                            want-ds (dataset-of shard)]
+                        (if (nil? dg)
+                          (swap! no-text inc)
+                          (do
+                            (when (not= ds want-ds)
+                              (bad! "dangling reference for" (pr-str uri)
+                                    ": :law.text/dataset is" (pr-str ds)
+                                    "but the entry lives in" (pr-str want-ds)))
+                            (when-not (contains? allowed ds)
+                              (bad! "dangling reference for" (pr-str uri)
+                                    ": :law.text/dataset" (pr-str ds)
+                                    "is not a locked corpus source in"
+                                    lock-path))
+                            (let [path-ok? (and (string? tp)
+                                                (not (str/blank? tp))
+                                                (.startsWith tp "raw/"))
+                                  arch-ok? (and (string? ar)
+                                                (not (str/blank? ar))
+                                                (.startsWith ar "raw/")
+                                                (string? en)
+                                                (not (str/blank? en)))]
+                              (when-not (or path-ok? arch-ok?)
+                                (bad! "dangling reference for" (pr-str uri)
+                                      ": no address (:law.text/path"
+                                      (pr-str tp)
+                                      "or :law.text/archive+:law.text/entry"
+                                      (pr-str ar) (pr-str en) ")")))
+                            (when-not (well-formed-sha? dg)
+                              (bad! "dangling reference for" (pr-str uri)
+                                    ": :law.text/sha256 is" (pr-str dg)))
+                            (when-not (and (integer? by) (pos? by))
+                              (bad! "dangling reference for" (pr-str uri)
+                                    ": :law.text/bytes is" (pr-str by))))))
+                      (swap! matched inc)))))
+              (println (str "sample of " sample-size
+                            " (seed " sample-seed "): "
+                            @matched "/" (count sample) " matched"
+                            " (" @no-text " hold no full text here)"))
+              (println (str "distinct canonical URIs in corpus: " u))
+              (println "sample only: this check finds nothing about entries outside the sample."))))))))
+
+(if (seq @problems)
+  (do (binding [*out* *err*]
+        (println (str "FAIL -- " (count @problems) " problem(s):"))
+        (doseq [p @problems] (println (str "  - " p))))
+      (set! (.-exitCode js/process) 1))
+  (println "OK"))
