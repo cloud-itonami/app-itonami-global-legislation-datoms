@@ -1,0 +1,33 @@
+{
+  "cid": "bafkreig4zmprsgpkfkmznp4iw7yfvs2goct6y27m6puowg3hupkvqwkswu",
+  "verified": true,
+  "bytes": 4343160,
+  "receipt": {
+    "v": 1,
+    "receipt": {
+      "kind": 1,
+      "subject": "0x01551220dccb1f1919ea2a9996bf88b7f05acb4670a7ec6becf3e8eb1b67a3d5585952b5",
+      "size": 4343160,
+      "contentDigest": "0xdccb1f1919ea2a9996bf88b7f05acb4670a7ec6becf3e8eb1b67a3d5585952b5",
+      "requestId": "0x958f03be352e6f572f5f7732dc79e581cd91e322c3f07a6994a2a5e10d3af1e5",
+      "requester": "0xa39c0b37a71f8ae7a9daa6840e05ea2541aa8fccbc889a2aa232acc95ab73d47",
+      "reservationId": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "leaseId": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "pieceCommitment": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "policyRevision": "0x4a5554c0c4c2cdfeb10145497e30736e93086353249889ffc3e54b5d2a5eba36",
+      "state": 1,
+      "storeClass": 1,
+      "acceptedAt": 1795223984274,
+      "retentionUntil": 0,
+      "keyId": "0xad062e68a246d01a369edc6d3713cbbc737b8469208796e52b8c6e943e92eafc",
+      "keyEpoch": 1
+    },
+    "sig": {
+      "alg": "Ed25519",
+      "key": "0xad062e68a246d01a369edc6d3713cbbc737b8469208796e52b8c6e943e92eafc",
+      "sig": "UAIg0RQYCwACM5YFyghIJRj0mPbk-RFGoUApGT6VB4u5Fkrv096n9I_m9rm3s_ZPV61QCtAsWNuC2pivy7QnAQ"
+    }
+  },
+  "receiptCid": "bafyreifqnqd73hfmxyseuxx5jmtkhckdkyekkkx5lus35dp4emng3ev7wu",
+  "receiptVerified": true
+}
