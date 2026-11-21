@@ -1,0 +1,90 @@
+#!/usr/bin/env nbb
+(ns verify-states-join
+  "Recompute the join declared in coverage/external-joins.edn
+  (:join/states-country-directories) from the committed projection and the
+  directory listing of the states repository, and fail when the registered
+  numbers are stale or the checkout is not at the pinned revision.
+
+  usage: nbb bin/verify-states-join.cljk <checkout of the states repository>
+
+  Reads files only. It does not fetch, and it does not write: a join that
+  drifted is a reviewed edit to coverage/external-joins.edn, not something
+  this script repairs. The pin lives in that file (not in sources.lock.edn,
+  which only pins build inputs), and whether a code is a country is decided
+  by :jurisdiction/kind only -- never by shape."
+  (:require [clojure.string :as str]
+            [edamame.core :as edn]))
+
+(def fs (js/require "fs"))
+(def path (js/require "path"))
+(def crypto (js/require "crypto"))
+
+(defn slurp* [p] (.toString (.readFileSync fs p)))
+(defn sha256 [p] (-> (.createHash crypto "sha256") (.update (.readFileSync fs p)) (.digest "hex")))
+(defn sha256-string [s] (-> (.createHash crypto "sha256") (.update (js/Buffer.from s)) (.digest "hex")))
+
+(defn head-revision
+  "The commit a checkout is at, read from .git without running git. nil when
+  it cannot be read -- an unknown revision is reported as unknown, never
+  assumed to be the locked one."
+  [root]
+  (let [head-file (.join path root ".git" "HEAD")]
+    (when (.existsSync fs head-file)
+      (let [head (.trim (slurp* head-file))]
+        (if-let [[_ ref] (re-matches #"ref: (.+)" head)]
+          (let [ref-file (.join path root ".git" ref)]
+            (when (.existsSync fs ref-file) (.trim (slurp* ref-file))))
+          head)))))
+
+(def remote-root
+  (or (first *command-line-args*)
+      (throw (ex-info "usage: verify-states-join.cljk <states checkout>" {}))))
+
+(let [joins   (edn/parse-string (slurp* "coverage/external-joins.edn"))
+      join    (first (filter #(= :join/states-country-directories (:join/id %))
+                             (:coverage/external-joins joins)))
+      _       (assert join "coverage/external-joins.edn declares no :join/states-country-directories")
+      pinned  (:join/revision join)
+      _       (assert (re-matches #"[0-9a-f]{40}" (str pinned))
+                      (str "join pins no 40-hex revision: " (pr-str pinned)))
+      revision (head-revision remote-root)
+      _        (assert (or (nil? revision) (= revision pinned))
+                       (str "states checkout is at " revision
+                            ", the join pins " pinned))
+      local-file "data/datascript-tx.edn"
+      remote-dir (.join path remote-root (:join/directory join))
+      local-key  (:join/local-key join)
+      [filter-key filter-value] (first (:join/local-filter join))
+      local      (edn/parse-string (slurp* local-file))
+      jur        (filter #(contains? % local-key) local)
+      national   (set (map local-key (filter #(= filter-value (get % filter-key)) jur)))
+      entries    (vec (.readdirSync fs remote-dir #js {:withFileTypes true}))
+      remote-names (vec (sort (map #(.toUpperCase (.-name %))
+                                  (filter #(.isDirectory %) entries))))
+      remote     (set remote-names)
+      measured {:local-jurisdictions-by-kind (into (sorted-map) (frequencies (map :jurisdiction/kind jur)))
+                :local-national (count national)
+                :remote-directories (count remote-names)
+                :remote-not-three-letter (vec (filter #(not= 3 (count %)) remote-names))
+                :matched (count (filter national remote))
+                :local-national-unmatched (vec (sort (remove remote national)))
+                :remote-unmatched (vec (sort (remove national remote)))}]
+  ;; Evidence floors. Every count below is a filter over a collection, and an
+  ;; empty collection satisfies "nothing is unmatched" while joining nothing.
+  (assert (pos? (count jur)) (str "no " local-key " values in " local-file))
+  (assert (pos? (count national)) (str "no " filter-value " " filter-key " values in " local-file))
+  (assert (pos? (count remote-names)) (str "no directories under " remote-dir))
+  (assert (= (count remote-names) (count remote))
+          (str "directory names under " remote-dir " collide when upper-cased"))
+  (assert (= (:join/measured join) measured)
+          (str "coverage/external-joins.edn :join/measured is stale.\n registered: "
+               (pr-str (:join/measured join)) "\n measured:   " (pr-str measured)))
+  (println (pr-str {:status :ok
+                    :join (:join/id join)
+                    :local {:file local-file :sha256 (sha256 local-file)}
+                    :remote {:repository (:join/repository join)
+                             :directory (:join/directory join)
+                             :listing-sha256 (sha256-string (str/join "\n" remote-names))
+                             :revision (or revision :unknown)
+                             :locked-revision pinned}
+                    :measured measured})))
