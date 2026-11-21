@@ -1,0 +1,276 @@
+#!/usr/bin/env nbb
+;; AWAI-3631: verifies coverage/eli-coverage.edn against the committed corpus.
+;; Reads files only; writes nothing.
+;;
+;; It rebuilds the ELI coverage table in memory from the corpus laws shards
+;; (one shard at a time, never concatenated) and fails when the committed
+;; table differs. It also fails when a laws shard under data/corpus/ is not
+;; listed in the table, when a listed shard's bytes/sha256 changed, when a
+;; :law entity carries a non-string :law/eli, or when the recorded totals do
+;; not equal the sums over the per-source rows. It prints the totals.
+;;
+;; Counting rules (see the table's :eli-coverage/note):
+;;   - a :law entity is a map containing :law/key (both the longhand
+;;     {:law/key ...} and the #:law{:key ...} spellings parse to this);
+;;   - with-eli counts :law entities whose :law/eli is a string;
+;;   - distinct counts distinct :law/eli strings; shared counts distinct
+;;     strings attached to more than one distinct :law/key;
+;;   - a shape is scheme://host plus the first two path segments of the
+;;     value, e.g. "http://data.europa.eu/eli/dec". Values that are not
+;;     scheme://-shaped fall into "<not-uri-shaped>". No value is judged
+;;     valid or invalid ELI against the standard from memory; the shapes
+;;     only describe what is there.
+(require '[edamame.core :as edn]
+         '[clojure.string :as str])
+
+(def fs (js/require "fs"))
+(def crypto (js/require "crypto"))
+(def node-path (js/require "path"))
+
+(def table-path "coverage/eli-coverage.edn")
+(def corpus-dir "data/corpus")
+
+(def problems (atom []))
+(defn bad! [& xs]
+  (swap! problems conj (str/join " " (map str xs))))
+
+(defn slurp* [p]
+  (try (.toString (.readFileSync fs p))
+       (catch js/Error e
+         (bad! "cannot read" p ":" (.-message e))
+         nil)))
+
+(defn sha256-hex [buf]
+  (.digest (.update (.createHash crypto "sha256") buf) "hex"))
+
+(defn shape-of
+  "Coarse, purely descriptive shape of one :law/eli string value:
+  scheme://host plus the first two path segments. Anything without a
+  scheme:// prefix falls into <not-uri-shaped>."
+  [v]
+  (let [m (re-matches #"^([A-Za-z][A-Za-z0-9+.-]*)://([^/?#]*)(/[^?#]*)?[?#]?.*$" v)]
+    (if m
+      (let [[_ scheme host path] m
+            segs (filter #(not (str/blank? %)) (str/split (or path "") #"/"))]
+        (str scheme "://" host "/" (str/join "/" (take 2 segs))))
+      "<not-uri-shaped>")))
+
+(defn laws-shards-on-disk
+  "Every laws-*.edn file under data/corpus/<dataset>/, sorted."
+  []
+  (sort (mapcat (fn [ds]
+                  (let [dir (.join node-path corpus-dir ds)]
+                    (->> (array-seq (.readdirSync fs dir))
+                         (map #(.toString %))
+                         (filter #(and (.startsWith % "laws-")
+                                       (.endsWith % ".edn")))
+                         (map #(.join node-path dir %)))))
+                (try (->> (array-seq (.readdirSync fs corpus-dir
+                                                    #js {:withFileTypes true}))
+                          (filter #(.isDirectory %))
+                          (map #(.-name %)))
+                     (catch js/Error e
+                       (bad! "cannot list" corpus-dir ":" (.-message e))
+                       [])))))
+
+(defn dataset-of
+  "Dataset name from a shard path data/corpus/<dataset>/laws-NNN.edn."
+  [shard-path]
+  (let [parts (str/split shard-path #"/")]
+    (if (= 4 (count parts))
+      (nth parts 2)
+      (do (bad! "shard path is not data/corpus/<dataset>/laws-NNN.edn:"
+                shard-path)
+          nil))))
+
+(let [table-text (slurp* table-path)]
+  (when table-text
+    (let [table (try (edn/parse-string table-text)
+                     (catch js/Error e
+                       (bad! "cannot parse" table-path ":" (.-message e))
+                       nil))]
+      (when table
+        (let [committed-shards (:eli-coverage/shards table)
+              committed-rows (:eli-coverage/rows table)
+              committed-totals (:eli-coverage/totals table)
+              committed-shapes (:eli-coverage/shapes table)
+              on-disk (laws-shards-on-disk)
+              committed-paths (mapv :path (or committed-shards []))
+              missing (remove (set committed-paths) on-disk)
+              extra (remove (set on-disk) committed-paths)]
+          (doseq [p missing]
+            (bad! "laws shard on disk is not listed in" table-path ":" p))
+          (doseq [p extra]
+            (bad! "shard listed in" table-path "is not on disk:" p))
+          ;; Rebuild the measurement shard by shard.
+          (let [;; per shard: {:laws n :with n :jurisdiction->...}
+                per-shard
+                (mapv (fn [{:keys [path sha256 bytes laws]}]
+                        (let [buf (try (.readFileSync fs path)
+                                       (catch js/Error e
+                                         (bad! "cannot read" path ":"
+                                               (.-message e))
+                                         nil))]
+                          (when buf
+                            (let [actual-sha (sha256-hex buf)
+                                  actual-bytes (.-length buf)]
+                              (when (and sha256 (not= actual-sha sha256))
+                                (bad! "source sha256 mismatch for" path ": file is"
+                                      actual-sha "but" table-path "claims" sha256))
+                              (when (and bytes (not= actual-bytes bytes))
+                                (bad! "byte length mismatch for" path ": file has"
+                                      actual-bytes "but" table-path "records" bytes))
+                              (let [parsed (try (edn/parse-string (.toString buf))
+                                                (catch js/Error e
+                                                  (bad! "cannot parse" path ":"
+                                                        (.-message e))
+                                                  nil))]
+                                (when parsed
+                                  (let [ents (if (vector? parsed) parsed [parsed])
+                                        non-maps (filter #(not (map? %)) ents)
+                                        laws-ents (filter #(contains? % :law/key) ents)]
+                                    (when (seq non-maps)
+                                      (bad! "laws shard" path "holds"
+                                            (count non-maps)
+                                            "top-level non-map entit(ies)"))
+                                    (when (not= (count ents) (count laws-ents))
+                                      (bad! "laws shard" path "holds"
+                                            (- (count ents) (count laws-ents))
+                                            "entit(ies) without :law/key"))
+                                    (when (and laws (not= (count laws-ents) laws))
+                                      (bad! "law count differs for" path
+                                            ": measured" (count laws-ents)
+                                            "but" table-path "records" laws))
+                                    {:path path
+                                     :laws laws-ents})))))))
+                      (or committed-shards []))
+                ok-shards (filter identity per-shard)
+                ;; aggregate per [dataset jurisdiction]
+                by-dj (atom {})
+                eli-keys (atom {})
+                _ (doseq [{:keys [path laws]} ok-shards
+                          :let [ds (dataset-of path)]
+                          e laws
+                          :when (and ds (map? e))]
+                      (let [jur (:law/jurisdiction e)
+                            k (:law/key e)
+                            v (:law/eli e)]
+                        (when-not (and (string? jur) (not (str/blank? jur)))
+                          (bad! "law entity" (pr-str k) "in" path
+                                "has no string :law/jurisdiction"))
+                        (swap! by-dj update [ds jur]
+                               (fn [acc]
+                                 (let [acc (or acc {:total 0 :with 0})]
+                                   (cond-> (update acc :total inc)
+                                     (string? v) (update :with inc)))))
+                        (when (contains? e :law/eli)
+                          (when-not (string? v)
+                            (bad! "law entity" (pr-str k) "in" path
+                                  "has non-string :law/eli:" (pr-str v)))
+                          (when (string? v)
+                            (swap! eli-keys update v (fnil conj []) k)))))
+                ;; One row per [dataset jurisdiction]: the global
+                ;; value->keys map restricted to this row's :law/keys.
+                expected-rows
+                (mapv (fn [[[ds jur] {:keys [total with]}]]
+                        (let [ks-here
+                              (into #{}
+                                    (comp (filter #(contains? % :law/key))
+                                          (filter #(= (:law/jurisdiction %) jur))
+                                          (map :law/key))
+                                    (mapcat :laws
+                                            (filter #(= (dataset-of (:path %)) ds)
+                                                    ok-shards)))
+                              vals-here
+                              (filter (fn [[_ ks]]
+                                        (some ks-here (distinct ks)))
+                                      @eli-keys)
+                              shared-here
+                              (filter (fn [[_ ks]]
+                                        (> (count (distinct ks)) 1))
+                                      vals-here)
+                              exs (mapv (fn [[v ks]]
+                                          {:eli v
+                                           :law/key-count (count (distinct ks))
+                                           :law/keys (vec (take 25 (sort (distinct ks))))})
+                                        (take 20 (sort-by first shared-here)))]
+                          {:dataset ds
+                           :jurisdiction jur
+                           :laws/total total
+                           :laws/with-eli with
+                           :laws/without-eli (- total with)
+                           :eli/distinct (count vals-here)
+                           :eli/shared (count shared-here)
+                           :eli/shared-examples exs}))
+                      (sort-by first @by-dj))
+                total-laws (reduce + 0 (map :laws/total expected-rows))
+                total-with (reduce + 0 (map :laws/with-eli expected-rows))
+                distinct-all (count @eli-keys)
+                shared-all (filter (fn [[_ ks]] (> (count (distinct ks)) 1))
+                                   @eli-keys)
+                expected-totals
+                {:laws/total total-laws
+                 :laws/with-eli total-with
+                 :laws/without-eli (- total-laws total-with)
+                 :eli/distinct distinct-all
+                 :eli/shared (count shared-all)}
+                shape-freqs (frequencies (map shape-of (keys @eli-keys)))
+                expected-shapes
+                (mapv (fn [[s n]]
+                        {:eli.shape/pattern s :eli.shape/values n})
+                      (sort (fn [[s1 n1] [s2 n2]]
+                              (let [c (compare n2 n1)]
+                                (if (zero? c) (compare s1 s2) c)))
+                            shape-freqs))]
+            ;; 1. Rows must equal the in-memory rebuild.
+            (when-not (= expected-rows (or committed-rows []))
+              (let [key-of (juxt :dataset :jurisdiction)
+                    expm (into {} (map (juxt key-of identity)) expected-rows)
+                    comm (into {} (map (juxt key-of identity)) (or committed-rows []))]
+                (doseq [k (sort (remove #(contains? comm %) (keys expm)))]
+                  (bad! "row missing from" table-path ":" (pr-str k)))
+                (doseq [k (sort (remove #(contains? expm %) (keys comm)))]
+                  (bad! "extra row in" table-path "with no measured dataset/jurisdiction:"
+                        (pr-str k)))
+                (doseq [k (sort (filter #(and (contains? expm %)
+                                              (contains? comm %)
+                                              (not= (get expm %) (get comm %)))
+                                        (keys expm)))]
+                  (bad! "row differs for" (pr-str k) ": measured"
+                        (pr-str (get expm k)) "but" table-path "records"
+                        (pr-str (get comm k))))))
+            ;; 2. Totals must equal the measured totals.
+            (when-not (= expected-totals (or committed-totals {}))
+              (bad! "totals differ: measured" (pr-str expected-totals)
+                    "but" table-path "records" (pr-str committed-totals)))
+            ;; 3. The total :law count must equal the sum over the rows.
+            (let [row-sum (reduce + 0 (map :laws/total (or committed-rows [])))]
+              (when-not (= (:laws/total (or committed-totals {})) row-sum)
+                (bad! "total :law count" (:laws/total (or committed-totals {}))
+                      "does not equal the sum over the per-source rows" row-sum)))
+            ;; 4. Shapes must equal the in-memory rebuild, and their values
+            ;;    must add up to the distinct :law/eli count.
+            (when-not (= expected-shapes (or committed-shapes []))
+              (bad! "shapes differ: measured" (pr-str expected-shapes)
+                    "but" table-path "records" (pr-str committed-shapes)))
+            (let [shape-sum (reduce + 0 (map :eli.shape/values (or committed-shapes [])))]
+              (when-not (= shape-sum (:eli/distinct (or committed-totals {})))
+                (bad! "shape values sum to" shape-sum
+                      "but the committed distinct :law/eli count is"
+                      (:eli/distinct (or committed-totals {})))))
+            ;; Measured totals, printed on every run.
+            (println (str "laws total: " total-laws
+                          " (with ELI: " total-with
+                          "; without: " (- total-laws total-with) ")"))
+            (println (str "distinct :law/eli values: " distinct-all
+                          "; shared by more than one :law/key: " (count shared-all)))
+            (println (str "shape groups: " (count expected-shapes)
+                          " (largest: "
+                          (pr-str (:eli.shape/pattern (first expected-shapes))) " "
+                          (:eli.shape/values (first expected-shapes)) ")"))))))))
+(if (seq @problems)
+  (do (binding [*out* *err*]
+        (println (str "FAIL -- " (count @problems) " problem(s):"))
+        (doseq [p @problems] (println (str "  - " p))))
+      (set! (.-exitCode js/process) 1))
+  (println "OK"))

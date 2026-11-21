@@ -1,0 +1,58 @@
+{:eli-coverage/source "data/corpus"
+ :eli-coverage/note "Derived only from the committed corpus laws shards listed in :eli-coverage/shards, read one shard at a time (never concatenated): a :law entity is a map containing :law/key, and with-eli counts those whose :law/eli is a string. JP/GBR/USA rows report zero :law/eli values; that is a valid measurement, not a gap in the table. Shapes only describe the values present (scheme://host plus the first two path segments); no value is judged valid or invalid ELI against the standard from memory. Shared examples are capped at 20 values with up to 25 sorted :law/keys each. Each :path also has a row in storage/cid-manifest.edn. The :laws/total 95194 confirms the data/quality-report.edn claim of 95,194 laws in 4 sources measured at this revision."
+ :eli-coverage/shards
+ [{:path "data/corpus/eu.europa.eur-lex/laws-000.edn", :sha256 "9507fedeb3f9e45c6635d419f3fdafeec20fced6377e7a40a1d94acef3dee386", :bytes 7293517, :laws 20000}
+  {:path "data/corpus/eu.europa.eur-lex/laws-001.edn", :sha256 "2345c55a1295d57aca44acf4773d01261cf4af9f20574f686c1e7a99dd860ee4", :bytes 7011992, :laws 20000}
+  {:path "data/corpus/eu.europa.eur-lex/laws-002.edn", :sha256 "b6b9cddbec1b3b11f75f656c30043412503e1d93164c357c2359bfa3d913b83c", :bytes 7113777, :laws 20000}
+  {:path "data/corpus/eu.europa.eur-lex/laws-003.edn", :sha256 "acb41e3030ca1a0f91e4f5f332e83c41edc832d2b873e8699703e15463d3d22b", :bytes 1504536, :laws 4237}
+  {:path "data/corpus/gov.govinfo.bulkdata/laws-000.edn", :sha256 "3b726270210cfd17aebc9d46cb17345f83805633b96db27454e017cd735705ad", :bytes 13767087, :laws 18154}
+  {:path "data/corpus/jp.go.e-gov.elaws/laws-000.edn", :sha256 "47987f2bf3be6ffea7726c06dedad2f320aec17dba3c71c9840f73c0646920f6", :bytes 7973376, :laws 9536}
+  {:path "data/corpus/uk.gov.legislation/laws-000.edn", :sha256 "12ea5a6b119d2d1a46972b9f9dd0cc3e43a2540da1e712391d8770f73a162954", :bytes 2048807, :laws 3267}]
+ :eli-coverage/totals
+ {:laws/total 95194, :laws/with-eli 51195, :laws/without-eli 43999, :eli/distinct 51195, :eli/shared 0}
+ :eli-coverage/rows
+ [{:dataset "eu.europa.eur-lex", :jurisdiction "EU", :laws/total 64237, :laws/with-eli 51195, :laws/without-eli 13042, :eli/distinct 51195, :eli/shared 0, :eli/shared-examples []}
+  {:dataset "gov.govinfo.bulkdata", :jurisdiction "USA", :laws/total 18154, :laws/with-eli 0, :laws/without-eli 18154, :eli/distinct 0, :eli/shared 0, :eli/shared-examples []}
+  {:dataset "jp.go.e-gov.elaws", :jurisdiction "JPN", :laws/total 9536, :laws/with-eli 0, :laws/without-eli 9536, :eli/distinct 0, :eli/shared 0, :eli/shared-examples []}
+  {:dataset "uk.gov.legislation", :jurisdiction "GBR", :laws/total 3267, :laws/with-eli 0, :laws/without-eli 3267, :eli/distinct 0, :eli/shared 0, :eli/shared-examples []}]
+ :eli-coverage/shapes
+ [{:eli.shape/pattern "http://data.europa.eu/eli/dec", :eli.shape/values 21361}
+  {:eli.shape/pattern "http://data.europa.eu/eli/reg_impl", :eli.shape/values 7867}
+  {:eli.shape/pattern "http://data.europa.eu/eli/reg", :eli.shape/values 6911}
+  {:eli.shape/pattern "http://data.europa.eu/eli/treaty", :eli.shape/values 6248}
+  {:eli.shape/pattern "http://data.europa.eu/eli/dec_impl", :eli.shape/values 3111}
+  {:eli.shape/pattern "http://data.europa.eu/eli/reg_del", :eli.shape/values 1576}
+  {:eli.shape/pattern "http://data.europa.eu/eli/dir", :eli.shape/values 1112}
+  {:eli.shape/pattern "http://data.europa.eu/eli/agree_internation", :eli.shape/values 1016}
+  {:eli.shape/pattern "http://data.europa.eu/eli/reco", :eli.shape/values 442}
+  {:eli.shape/pattern "http://data.europa.eu/eli/prot", :eli.shape/values 310}
+  {:eli.shape/pattern "http://data.europa.eu/eli/C", :eli.shape/values 269}
+  {:eli.shape/pattern "http://data.europa.eu/eli/guideline", :eli.shape/values 128}
+  {:eli.shape/pattern "http://data.europa.eu/eli/dir_del", :eli.shape/values 126}
+  {:eli.shape/pattern "http://data.europa.eu/eli/proc_rules", :eli.shape/values 104}
+  {:eli.shape/pattern "http://data.europa.eu/eli/opin", :eli.shape/values 82}
+  {:eli.shape/pattern "http://data.europa.eu/eli/convention", :eli.shape/values 75}
+  {:eli.shape/pattern "http://data.europa.eu/eli/compos", :eli.shape/values 72}
+  {:eli.shape/pattern "http://data.europa.eu/eli/dir_impl", :eli.shape/values 70}
+  {:eli.shape/pattern "http://data.europa.eu/eli/joint_action", :eli.shape/values 63}
+  {:eli.shape/pattern "http://data.europa.eu/eli/exch_let", :eli.shape/values 54}
+  {:eli.shape/pattern "http://data.europa.eu/eli/dec_del", :eli.shape/values 53}
+  {:eli.shape/pattern "http://data.europa.eu/eli/agree_amend", :eli.shape/values 28}
+  {:eli.shape/pattern "http://data.europa.eu/eli/dec_framw", :eli.shape/values 20}
+  {:eli.shape/pattern "http://data.europa.eu/eli/agree_eums", :eli.shape/values 12}
+  {:eli.shape/pattern "http://data.europa.eu/eli/declar", :eli.shape/values 12}
+  {:eli.shape/pattern "http://data.europa.eu/eli/agree", :eli.shape/values 11}
+  {:eli.shape/pattern "http://data.europa.eu/eli/agree_interinstit", :eli.shape/values 10}
+  {:eli.shape/pattern "http://data.europa.eu/eli/arrang", :eli.shape/values 8}
+  {:eli.shape/pattern "http://data.europa.eu/eli/memorandum_underst", :eli.shape/values 8}
+  {:eli.shape/pattern "http://data.europa.eu/eli/notice", :eli.shape/values 8}
+  {:eli.shape/pattern "http://data.europa.eu/eli/res", :eli.shape/values 8}
+  {:eli.shape/pattern "http://data.europa.eu/eli/reg_financ", :eli.shape/values 5}
+  {:eli.shape/pattern "http://data.europa.eu/eli/proc_internal", :eli.shape/values 4}
+  {:eli.shape/pattern "http://data.europa.eu/eli/add", :eli.shape/values 3}
+  {:eli.shape/pattern "http://data.europa.eu/eli/agree_prot", :eli.shape/values 2}
+  {:eli.shape/pattern "http://data.europa.eu/eli/minutes", :eli.shape/values 2}
+  {:eli.shape/pattern "http://data.europa.eu/eli/2025", :eli.shape/values 1}
+  {:eli.shape/pattern "http://data.europa.eu/eli/budget", :eli.shape/values 1}
+  {:eli.shape/pattern "http://data.europa.eu/eli/datpro", :eli.shape/values 1}
+  {:eli.shape/pattern "http://data.europa.eu/eli/statute", :eli.shape/values 1}]}
