@@ -1,0 +1,63 @@
+{
+  "roots": [
+    "bafkreia2wbjzhoropuzw2y37bluvetnfbdr6inblciooeyd4qzeiuaxhem",
+    "bafkreia2wdci2hepl5d5szojtipi6uiqxy3g6dpyrdeetmdgvsfyusvnpi",
+    "bafkreia2wk6ollylhwygfmspsallpxth4ns2paj2iy4j75fgq6fwtrajna",
+    "bafkreia2wss7e4p3r5kfcimxwvda733wcobwgfddtzbmnj3zhdjnit5gei",
+    "bafkreia2ycym6fvgokyp2h63agxxghpgjmbd65j24rgvnhigtp265fakty",
+    "bafkreia2zejn3www4bosjyscvkn5qjdbpumhngk4htx7dqzj3vda2y7ixm",
+    "bafkreia32m2mppdxeqllcrogxfp7rcsxcftvuxhz2lhqviww2oel5f7q24",
+    "bafkreia32z5acnbyvki6w2r47nl7fbyyx5vzz3afswqnrmnkq473eqdzty",
+    "bafkreia33waom5zfmgawmfeb64rsitooubzarjrqfyhh7f66ergdqc5zyu",
+    "bafkreia34bmfiay3gcaid2wu6i4ytqcnsgt4akgurakc3radpxkcrma3hy",
+    "bafkreia34fsbmwksro5amj3h4fvj65qjbm4swnfbxe6vcylblgjqookczq",
+    "bafkreia34yq62lwf55rmdb5vxnu6x6cmnqtfmsg5oie5yjlggjqk3wz5py",
+    "bafkreia35dq7rgpmqqim5ugnujawsxdikxij72usjoncchi3rffyqcfkwe",
+    "bafkreia35glq4dqofccxviars2i3remuby6z7jqeotrsimqbzt2j65loem",
+    "bafkreia35vdtayvuwey5j2krrfvajzrebej7kymfn5qx4hzmnhcfil6hfy",
+    "bafkreia37mqzn7u3ybwj4umvzyvtf7p5dh4pdmdgnvii5uubv43vdtbexy",
+    "bafkreia37r2bltajbmoot5aldwq4obeyhocgqgfbxbba2lk2svrtygm2te",
+    "bafkreia3afxwz62yeauwyhwnctvkgrqcx5zznpfmb7xe5yjkgycezdea4q",
+    "bafkreia3as4u5zgzvjv7ilaefsabagjou34ijjlo35xzj327xvz722woyq",
+    "bafkreia3csdtysm2bgemsvca5tacmdzdm2flozgfhnz7aeh4qsf64zkx7e",
+    "bafkreia3g75nu6nvzjaq5nm7gywnnksjazh6sqrkwoxh7etpxdxxgd6poy",
+    "bafkreia3ght3gy2r3ln3g673kxoxxeqznj3lynngvvdiu6zkz7qkp24yqq",
+    "bafkreia3jadgxtc6ms446gee2oxzzyn6vlwir2shpz4c5rogobjujtmima",
+    "bafkreia3llp7w2kl7qopgmeezvjvbm4op5rgbmneyumdwk7tcwoxzz4z3e",
+    "bafkreia3lw4ftbxao2pkuj4hbsdj27jef3izktmgv3gy5yu6fudmms2ihe",
+    "bafkreia3lzucf5yvst36byel5mdha5hropmih67snfux7hqsqiezz3ezd4",
+    "bafkreia3m3kwax5u3zmeufskzafkzpvyftaaifwse4dvc5ojievtbo6xve",
+    "bafkreia3mdsb7tin7fvho5dfrgldwh2tl24whvxkw7jgmb2wmxwt7gs7ri"
+  ],
+  "blocks": 28,
+  "external": [],
+  "verified": true,
+  "receipt": {
+    "v": 1,
+    "receipt": {
+      "kind": 2,
+      "subject": "0x132b9f431801d4cb6ed318bed0bb3e8ad853ccd68731995c2b9c5c16e952a703",
+      "size": 7976918,
+      "contentDigest": "0x2750973a68e3b23f49dc99f639483ff432b8f6d3f7b400811f3843fa0d9e1ab1",
+      "requestId": "0x48cea1859d9213606771790886de4912f7d7966f35cd6c4179db861a1cbc8eb0",
+      "requester": "0xa39c0b37a71f8ae7a9daa6840e05ea2541aa8fccbc889a2aa232acc95ab73d47",
+      "reservationId": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "leaseId": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "pieceCommitment": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "policyRevision": "0x357900dd03a302f859543da40e80b00055d7851a63c5571f28bc08a01cbd358a",
+      "state": 1,
+      "storeClass": 1,
+      "acceptedAt": 1795308061791,
+      "retentionUntil": 0,
+      "keyId": "0xad062e68a246d01a369edc6d3713cbbc737b8469208796e52b8c6e943e92eafc",
+      "keyEpoch": 1
+    },
+    "sig": {
+      "alg": "Ed25519",
+      "key": "0xad062e68a246d01a369edc6d3713cbbc737b8469208796e52b8c6e943e92eafc",
+      "sig": "tO_Z_NSPz2OI7IYx0Yb8op1hvhAvimpPPxbqndrkyr7lRclXE6oTMWqKfcE_dQ1DuZzHFluuHM5SNtQ8oWW_BQ"
+    }
+  },
+  "receiptCid": "bafyreidk4xana5l7nmotfl2ysgcxqrembcjwhmhjlnbmforus2jd7ofn5i",
+  "receiptVerified": true
+}

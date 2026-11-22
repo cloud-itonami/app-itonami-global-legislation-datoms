@@ -78,6 +78,12 @@ nbb test/cid_manifest_contract.cljk  # 上の独立した再検証 + フィク�
 
 検証スクリプト内の純粋関数 `cid-of-digest-hex` は hex の sha256 をその CID に変換します。corpus の `:law.text/sha256` 値が何件整形式（64 hex 文字）で CID 化可能か・何件そうでないかも報告だけします（失敗にはしません）。法令本文そのものはこの repository に無いので、そこから導いた CID はアドレスであって、バイトがどこかに存在する証拠ではありません。corpus に CID 属性は足さず、`data/` は再生成しません。
 
+### JP 法令本文の Yataverse 登録（AWAI-3317）
+
+出典: e-Gov 法令検索（`laws.e-gov.go.jp`、デジタル庁）の法令API v2（`GET /api/2/law_data/<id>`）から 2026-11-22（UTC）に取得した法令本文。法令本文は著作権法第13条により著作権の対象外ですが、同サイトの利用規約に従い出典を表示します（サイト表記は公共データ利用規約（第1.0版）、dataset 側の記録は政府標準利用規約（第2.0版）＝ CC BY 4.0 互換）。取得は 1 件ずつ順に 1.2 秒以上の間隔で、429/5xx は間隔を延ばして送り直しました。
+
+`storage/law-text-cids.edn` が 1 法令 1 行で、取得 bytes の sha256 → CID（CIDv1・raw・sha2-256・base32。第 1 波と同じ形）に加え、annex の key（`:annex-sha256`）、取得日時、e-Gov の版 id（`:revision-id`）、照合区分を持ちます。区分は一致 8,445・改正（新しい版の条文）896・直列化（annex と同じ版のはずが bytes が違う。古い bytes は比べられないので同じ中身だとは言わない）181・annex に無い追加分 13。404 の 1 件（`421CO0000000116`）は上げず `:unavailable` に記録しました。receipt は `storage/yataverse-receipts/` に CAR ごと（storeClass 1、retentionUntil 0）。
+
 ### canonical-URI sample check（AWAI-3807）
 
 corpus の正準 URI（`:law/url`、95,194 件）が、コミット済みの sha256 アドレスつき entry path（`data/corpus/*/laws-*.edn`。各 shard の sha256 は `data/corpus/manifest.edn` に pin）に解決することを、固定サンプルで確かめます。全文の再取得はしません。

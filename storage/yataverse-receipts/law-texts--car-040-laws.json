@@ -1,0 +1,49 @@
+{
+  "roots": [
+    "bafkreibolu7fqw4z4fp7waymrnx2bxggzt34zfjssjh2lnsdrjumyblwpq",
+    "bafkreiboohv6dtidlxdyu3qban35jj5dsk3lmd4byhgclqndq7shvjrvay",
+    "bafkreiborlxuchihgmtx7b26v7pyos6gpqghazmioft6ghmpnprifl64ua",
+    "bafkreibotfreotjuniqddmboegmswrpehra3a2tcxl3sc65ezupbq3vhs4",
+    "bafkreibov7d4qv6ldkojob5nvwp4jqlma5lav4gsbldqodcpbnkr4mquta",
+    "bafkreibow5b33kgbf6yfbmrr2jp7plltp4xdxrexi6gf7tm3xibup3dm4a",
+    "bafkreibow74p7ghsw6enjyq6tdqs4reilwd2qo3ace6d5zk7y6qpf54qx4",
+    "bafkreibozfq2xbnthsh5nffdruc27357mbqbqy4qwpe6rvcbzgqtm4xtzy",
+    "bafkreibozln7bx3kujo5tp3iuy3kybqjaxviijmjt7rb3s2vdt64vu6rie",
+    "bafkreibozstzgssj2rbxujxakh3bhjrwg7ic5gqir67e6a4dq6tnv5qfma",
+    "bafkreibp2cnspkpjnjdpoiiuk2xgmgljufayjbwqsjiknseuphish6hbbq",
+    "bafkreibp2kvpck4wl4nk5e7262zvmqzogbczipgv4tcvkphbvnkgrat6j4",
+    "bafkreibp2xsofx2mnsi4uta24jcu3ehjgwpjosy3nljqkfkv6wesz2sqxq",
+    "bafkreibp2xu5wrarntkaqhiyy55avwprklntinsdtbp2awjg2hkpy5a2ny"
+  ],
+  "blocks": 14,
+  "external": [],
+  "verified": true,
+  "receipt": {
+    "v": 1,
+    "receipt": {
+      "kind": 2,
+      "subject": "0x4d9ec440ef244c49f57a6d27640d4d72066e7a58b01706fc43066c59e74a76e7",
+      "size": 8360031,
+      "contentDigest": "0xcaffa19df7295c46e79468dacfa7d1be764e2fce8bc909481c987d8ddad7ca5b",
+      "requestId": "0x58025992455c3f325295dd9e7982f70db3b7ed47989a307093a9db3d15c91ad3",
+      "requester": "0xa39c0b37a71f8ae7a9daa6840e05ea2541aa8fccbc889a2aa232acc95ab73d47",
+      "reservationId": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "leaseId": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "pieceCommitment": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "policyRevision": "0xda98103ed27e5e473b5a183fb501f38f920d05acfea86901965414638a3181cf",
+      "state": 1,
+      "storeClass": 1,
+      "acceptedAt": 1795309925322,
+      "retentionUntil": 0,
+      "keyId": "0xad062e68a246d01a369edc6d3713cbbc737b8469208796e52b8c6e943e92eafc",
+      "keyEpoch": 1
+    },
+    "sig": {
+      "alg": "Ed25519",
+      "key": "0xad062e68a246d01a369edc6d3713cbbc737b8469208796e52b8c6e943e92eafc",
+      "sig": "TB_6CYdG8SLqCc8bOWEooqVJ6S-SHjv1K8MrEh2sKkIDymxlV5P3ipldAqU61qwtP9O1Tev-BWoOiyxBu0feDg"
+    }
+  },
+  "receiptCid": "bafyreibymtqqv5povzvdpcuqicjcd3fgzaaryk65olhew5u72p5p3f7oza",
+  "receiptVerified": true
+}

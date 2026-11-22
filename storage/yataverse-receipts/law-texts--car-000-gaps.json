@@ -1,0 +1,48 @@
+{
+  "roots": [
+    "bafkreibkbw3kpmr5gcvp3cukyhjvxn5xxzijo2ztvqdltgwz6fyl6uos6a",
+    "bafkreiakfj6cgq2kthzse6pggjdingy6fevhoxlno6vbzeusjcrgimi2le",
+    "bafkreiaw3hfpge7z37xlvdi5xeg2duwbhzkxmpyyp6wr45ohvv55htfol4",
+    "bafkreiggtpwvdoasmsjgqjf6p4tvbe5gzkbazs3v63hf67hauwm5hsrchm",
+    "bafkreib4gwzqys3sn6i6vnarehgvvoeugwkc2qn7ksgc4mk4uz76dqhs2u",
+    "bafkreiepkhmx7q7g2qbp4j5f7qrp4mqilva6kjysfdyl4afy3qdjuqr2fu",
+    "bafkreihqqrnq7x6mzi3e3fx3rspiqttisas4nnoglkdbt37docefhyrmli",
+    "bafkreihaxvxhl5k57joq2b6wmpfh24tgvrfqoti4wavz7gjknhueh3zc3a",
+    "bafkreihet23in4bo2vbolk2fgzzbefl3pqkrubqfwbznfhuhhnmhhgkbo4",
+    "bafkreiag4qydbuojotp2rx2lajhptpmsth4iklmg5bxoih5r44ny2k5thi",
+    "bafkreib62eukf4ljxde6tuniqs6dwnjffbmsjxe3rrffpoejyhfnzptfpi",
+    "bafkreiei73wl2trga6d6r7edlrolno6ewgcp5xrxe3aopq6hkzlwwnpxte",
+    "bafkreigchyb5ggisqtn253p5oyh7rcv2zrop7ptrti3z23xesikvlcqfqe"
+  ],
+  "blocks": 13,
+  "external": [],
+  "verified": true,
+  "receipt": {
+    "v": 1,
+    "receipt": {
+      "kind": 2,
+      "subject": "0x62600ff3246b2be58f19b0da7b4da8c956ed7f18c429776bcae188e60ec32535",
+      "size": 5626893,
+      "contentDigest": "0xf9d5f3a0ae675ac3d1ecc76cf2c815ec6360d59dbc7a8972fc55437e1dddb2bf",
+      "requestId": "0x78bac94af5b1b44ae0d76034988caf81d520bd127d2f17d4511f5dbec2091071",
+      "requester": "0xa39c0b37a71f8ae7a9daa6840e05ea2541aa8fccbc889a2aa232acc95ab73d47",
+      "reservationId": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "leaseId": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "pieceCommitment": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "policyRevision": "0x357900dd03a302f859543da40e80b00055d7851a63c5571f28bc08a01cbd358a",
+      "state": 1,
+      "storeClass": 1,
+      "acceptedAt": 1795307979960,
+      "retentionUntil": 0,
+      "keyId": "0xad062e68a246d01a369edc6d3713cbbc737b8469208796e52b8c6e943e92eafc",
+      "keyEpoch": 1
+    },
+    "sig": {
+      "alg": "Ed25519",
+      "key": "0xad062e68a246d01a369edc6d3713cbbc737b8469208796e52b8c6e943e92eafc",
+      "sig": "c6nbugJKeIc8TaAC_q9_JR5Dz7B4UagHywXvYgQVEMQM8wUXY5avObDNXEMdVtzlJwhJsJKM3CZ9MlQixRLbAQ"
+    }
+  },
+  "receiptCid": "bafyreiecefv7lcf3od5gj4cunlhcx5hhln62fv5xgyptepsnz5zoqg7iqe",
+  "receiptVerified": true
+}

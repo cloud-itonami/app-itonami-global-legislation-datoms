@@ -1,0 +1,60 @@
+{
+  "roots": [
+    "bafkreigskrnsrx7g33phmydreetwtecitw2jcbktmvzhtn3ui7qcoqhjj4",
+    "bafkreigsl7vhwehdmdnkdlkbusyvaifaibv3drydttewssdv2rx7lizsf4",
+    "bafkreigsmqrk6qy46z5ibeh52qsphygbsow5ai4pvlxjk7lfmcaswafxle",
+    "bafkreigsnnpkruhvc7zvvnsbt7ekdnty2q4aa56rnrtvz6wo4wl3doiacy",
+    "bafkreigsojfql3vci5tqm5eeehdns77iyfeart4eunfqqiyi5lzureb5le",
+    "bafkreigsphlwf26gnb5ed4nzasj7blltl4bc32vabilr7eiuxwbobcr2uq",
+    "bafkreigspj535hislbm2r5nhcxg3j5s4vgswneyn4hp2lmzvqwazuxzwya",
+    "bafkreigspvaamgk25j3syh6hrecuk5zjvqv74ifhwm223kkqczol44pmxi",
+    "bafkreigspvhsymazef3jygh7rufj5zfnpy76ezvigimiloaqunsnhxpkx4",
+    "bafkreigsrqwq3z75up4u2o6zrhs7xgcmjz3cizaik4dm3b4tloymsc5uhm",
+    "bafkreigssk4tdw7arqprnebvjqjsne4zhqxveytr64p4usnng2odignenm",
+    "bafkreigsslohleub4btkwdf4uz3djmyupoqwrdu6t6xo64zs3ktpchr7fe",
+    "bafkreigsupfcoi6w3kcto34hpt2lcbyxfrwsswuiqyd67pljribjh6s5re",
+    "bafkreigsv5fexbd5625rvvxqd67xs7t4y7zaplqtglw3u65qsrmwrj6iae",
+    "bafkreigsvidhcdnj2a7dppivkykfes2r4zh7cblb3rcng45vxefuhb2pou",
+    "bafkreigsw4s6ebd6bo4yxzovhvn45x6d7ps2luhv5bwphsaie2zfad4fji",
+    "bafkreigswkbbzyqbq2y5hy4wmpcxcnzr3rbj24tdpsycoxavjiu2hhdqg4",
+    "bafkreigsymix6ms3jti5gubyyy5smpgji2am5dfbziztqdnajlmxpaszqm",
+    "bafkreigsyv3gdnleofmvcjlot25vgdj7y7kryb34sl7tocu3cbhmdh4jji",
+    "bafkreigsz7zzbwwd3inyxigmerh46pszshe7bycdxuepts54qb2rvnnkbi",
+    "bafkreigt34fn7bhlgicry5tabsp7v65vn4lu5zvtksszx62irbcpduayse",
+    "bafkreigt37v2dpyl4t76uxsuedramlgmmmj5rq6zmjm24idrx7bqi3snxi",
+    "bafkreigt3a56ijbtllhwpu7ihlnvr37dmrrpkb7e32rjhkrpkw7lqcbhne",
+    "bafkreigt3gl3wr2e7kft2zhhf5q4mgclbv3t6iut3y3nipp2eogu2t6nru",
+    "bafkreigt5ad42ynvl4scenpgzdeyqwak6db6u4jrnn4hnwinrvvbaub5ra"
+  ],
+  "blocks": 25,
+  "external": [],
+  "verified": true,
+  "receipt": {
+    "v": 1,
+    "receipt": {
+      "kind": 2,
+      "subject": "0x12002509e8774725150575dce38b457a48e0edc1994432106d9173de3955e885",
+      "size": 5013261,
+      "contentDigest": "0x2121dfeae3c6f7156d6043f802a7744aaccf16e5ed5ab99beb1482d7496500ed",
+      "requestId": "0x6dec595fba003e69075bf47762af7e65c5a32a31a8dcea85771a3daf05a0d342",
+      "requester": "0xa39c0b37a71f8ae7a9daa6840e05ea2541aa8fccbc889a2aa232acc95ab73d47",
+      "reservationId": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "leaseId": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "pieceCommitment": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "policyRevision": "0x77228fc373e6348f33aeb795a4670639342efd5eee1b0c6cc26d9abdd265b4cd",
+      "state": 1,
+      "storeClass": 1,
+      "acceptedAt": 1795317063174,
+      "retentionUntil": 0,
+      "keyId": "0xad062e68a246d01a369edc6d3713cbbc737b8469208796e52b8c6e943e92eafc",
+      "keyEpoch": 1
+    },
+    "sig": {
+      "alg": "Ed25519",
+      "key": "0xad062e68a246d01a369edc6d3713cbbc737b8469208796e52b8c6e943e92eafc",
+      "sig": "R0fKug9Wzql9G0vTnkCPRSwo07eQbGhcUY-LaHh_wdjys7H1YHZObJSyaZ41OVABtvLsqYxpeHVvDAR_yfSJBA"
+    }
+  },
+  "receiptCid": "bafyreidoxcfaasq3fqrtg3b6rodswtr4x6gwyqgzl2a7a65ugvktl6azlq",
+  "receiptVerified": true
+}
