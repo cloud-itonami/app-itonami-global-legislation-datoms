@@ -1,0 +1,44 @@
+{
+  "roots": [
+    "bafkreie3ya5sgd5q5uidtyz2cvcm2u3xfe464jow2rsiuodeadvcnhp3c4",
+    "bafkreie3yc7nvfk2xx5uhgkcicoblpedwirsn4jtfpyilalmzwbnx7aw6m",
+    "bafkreie3yizpwjybtketolmhtx2cf5jrsjfzopwhhu3q7qu5ylyx6h5pji",
+    "bafkreie425zrjfugkji34r5zdqyjm46od7qtusciuy63d4rxfv23nprjpe",
+    "bafkreie42vzevwcygciu5bxjc3djptmlq3vul2vbsbln6wtkxapnaovs64",
+    "bafkreie43hyjp3ahsc76fwpwqv5mrwti65gibnegt7zg4be32522x7d7wq",
+    "bafkreie44jcdg3q6kz6n7tvjlqxe7xlunmrqs7zc4lyd6zojynaabpzmse",
+    "bafkreie45atjl3mt2oru4rqi5raktxrx5n2x3ro6hutkz7xgjkfy2wov4e",
+    "bafkreie45snckdoln5nwpsyglrjye5e4edm7syyowplf2zduqfgftuq3cu"
+  ],
+  "blocks": 9,
+  "external": [],
+  "verified": true,
+  "receipt": {
+    "v": 1,
+    "receipt": {
+      "kind": 2,
+      "subject": "0x2d6cb3c7f6cb8743073cfbb7a26ad84c2fd06d605939f3695f2f63622087f19a",
+      "size": 8080738,
+      "contentDigest": "0xf5925eee487a795d4888f010016c540dae98cc414a318fba73d11d2aa2a16a8d",
+      "requestId": "0x38cb2a987a759c3babc735ab91221685e8adf2f490aef02e4c806707adcc2e98",
+      "requester": "0xa39c0b37a71f8ae7a9daa6840e05ea2541aa8fccbc889a2aa232acc95ab73d47",
+      "reservationId": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "leaseId": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "pieceCommitment": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "policyRevision": "0x77228fc373e6348f33aeb795a4670639342efd5eee1b0c6cc26d9abdd265b4cd",
+      "state": 1,
+      "storeClass": 1,
+      "acceptedAt": 1795312554272,
+      "retentionUntil": 0,
+      "keyId": "0xad062e68a246d01a369edc6d3713cbbc737b8469208796e52b8c6e943e92eafc",
+      "keyEpoch": 1
+    },
+    "sig": {
+      "alg": "Ed25519",
+      "key": "0xad062e68a246d01a369edc6d3713cbbc737b8469208796e52b8c6e943e92eafc",
+      "sig": "AQg1DmwyVIYOL0hDYkjHQIyiwhj94CpCs9Or52yZvjUDTd4XB5Kd0Yyd6tlisHBJ467pL7PJ0WskQANhhzMADw"
+    }
+  },
+  "receiptCid": "bafyreidwyqsdn2krhu2nwirms3krzbncvkdshafl7qsh6vqtww7ey7vjx4",
+  "receiptVerified": true
+}
