@@ -1,0 +1,37 @@
+#!/usr/bin/env nbb
+;; ZB18-R1-NG01: verifies storage/law-text-cids.edn sha256->CID integrity and
+;; Yataverse CAR receipt shape. Optional arg = root prefix (default ".").
+;; Fails non-zero naming law-id / sha256 / CID on any mismatch.
+(ns verify-law-text-cids
+  (:require [clojure.string :as str] [edamame.core :as edn]))
+(def fs (js/require "fs")) (def crypto (js/require "crypto")) (def node-path (js/require "path"))
+(def root (or (first *command-line-args*) "."))
+(defn join [& xs] (.apply (.-join node-path) node-path (to-array xs)))
+(defn slurp* [p] (.toString (.readFileSync fs p)))
+(defn sha256-hex [buf] (.digest (.update (.createHash crypto "sha256") buf) "hex"))
+(def problems (atom []))
+(defn bad! [& xs] (swap! problems conj (str/join " " (map str xs))))
+(defn hex->bytes [hex] (mapv #(js/parseInt (subs hex % (+ % 2)) 16) (range 0 64 2)))
+(def alpha "abcdefghijklmnopqrstuvwxyz234567")
+(defn base32 [bytes] (let [bits (vec (mapcat (fn [b] (mapv #(bit-and (bit-shift-right b %) 1) [7 6 5 4 3 2 1 0])) bytes)) r (mod (count bits) 5) padded (if (zero? r) bits (into bits (repeat (- 5 r) 0)))] (apply str (map (fn [g] (nth alpha (reduce (fn [a bit] (+ (* a 2) bit)) 0 g))) (partition 5 padded)))))
+(defn cid-of [hex] (str "b" (base32 (into [1 0x55 0x12 0x20] (hex->bytes hex)))))
+(def table-path (join root "storage/law-text-cids.edn"))
+(def receipts-dir (join root "storage/yataverse-receipts"))
+(when-not (.existsSync fs table-path) (bad! "missing law-text-cids table:" table-path))
+(when (.existsSync fs table-path)
+  (let [table (edn/parse-string (slurp* table-path)) rows (:rows table)]
+    (when-not (seq rows) (bad! "law-text-cids table has no :rows:" table-path))
+    (doseq [{:keys [law-id fetched-sha256 cid annex-sha256 kind fetched-bytes]} rows]
+      (when-not (and (string? law-id) (not (str/blank? law-id))) (bad! "row missing :law-id sha256=" (pr-str fetched-sha256)))
+      (when-not (and (string? fetched-sha256) (re-matches #"[0-9a-f]{64}" fetched-sha256)) (bad! "law" law-id ":fetched-sha256 not 64-hex sha256:" (pr-str fetched-sha256)))
+      (when (and (string? fetched-sha256) (re-matches #"[0-9a-f]{64}" fetched-sha256))
+        (let [expected (cid-of fetched-sha256)] (when (not= expected cid) (bad! "law" law-id "CID mismatch: :cid is" cid "but sha256" fetched-sha256 "recomputes to CID" expected))))
+      (when-not (and (number? fetched-bytes) (pos? fetched-bytes)) (bad! "law" law-id ":fetched-bytes not positive for sha256" fetched-sha256))
+      (when (= kind :match) (when (not= fetched-sha256 annex-sha256) (bad! "law" law-id ":kind :match but :fetched-sha256" fetched-sha256 "!= :annex-sha256" annex-sha256 "CID" cid))))
+    (println (str "law-text rows: " (count rows)))))
+(when (.existsSync fs receipts-dir)
+  (let [files (->> (array-seq (.readdirSync fs receipts-dir)) (map str) (filter #(and (.startsWith % "law-texts--car-") (.endsWith % ".json"))))]
+    (doseq [f files] (let [p (join receipts-dir f) j (try (js/JSON.parse (slurp* p)) (catch js/Error e (bad! "receipt" f "unparseable:" (.-message e)) nil))]
+      (when j (when-not (.-receiptCid j) (bad! "receipt" f "missing receiptCid CID")) (when-not (= true (.-verified j)) (bad! "receipt" f "verified is not true receiptCid" (.-receiptCid j))) (when-not (seq (.-roots j)) (bad! "receipt" f "has no roots CID")))))
+    (println (str "law-text CAR receipts: " (count files)))))
+(if (seq @problems) (do (binding [*out* *err*] (println (str "FAIL -- " (count @problems) " problem(s):")) (doseq [p @problems] (println (str "  - " p)))) (set! (.-exitCode js/process) 1)) (println "OK"))

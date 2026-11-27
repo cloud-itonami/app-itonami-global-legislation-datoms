@@ -168,3 +168,23 @@ kbb -M test/query_contract.cljk        # Datascript query/coverage 不変条件
 
 - `docs/ci-design.md` — CI が何を検証するか(seed provenance / CI lock / ビルド差分 / query contract)。
 - `maturity/scorecard.edn` — R2 としての達成/未達基準。全文コーパス化は明示的に対象外(`:full-text-corpus :status :explicitly-out-of-scope`)。
+
+### ZB18-R1 負の対照・法務隔離・整合整備
+
+License: この節と追加スクリプトの license は権利者の決定待ちです。LICENSE ファイルは足しません。`data/` は各出典の条件のままです。
+
+この repo は `vis=public` かつ root に `LICENSE` が無い（権利者決定待ち）ため、公開バンドル/配布は fail-closed です:
+
+```bash
+node bin/verify-distribution-gate.mjs          # 実 repo では LICENSE 不在 + pending ファイル隔離で exit 1 が正
+node test/distribution_gate_contract.mjs       # 一時コピーで LICENSE 配置 + pending 解消時のみ通過を確認
+nbb bin/verify-law-text-cids.cljk              # storage/law-text-cids.edn の sha256→CID 再計算 + CAR receipt 形状
+nbb test/law_text_cids_contract.cljk           # NG01: bytes/sha256/CID 改竄 fixture が law-id・CID 名指しで失敗
+nbb bin/verify-relations-shape.cljk <relations-*.edn>  # NG04: :rel/kind・:rel/to 欠落を外部エッジと混同せず拒否
+node test/negative_controls_contract.mjs       # NG03 未知 jurisdiction / NG04 / NG05 不正 ELI の負の対照
+clojure -M test/corpus_contract.cljk           # SG01: EU/UK/US を含む per-source 構造アサーション
+```
+
+- NG03: `bin/build.cljk` は未知 jurisdiction code を supranational fallback 名で通さず、code 名指しで失敗します。
+- NG05: `bin/verify-eli-coverage.cljk` は `http(s)://data.europa.eu/eli/...` 形式でない `:law/eli` を law key 名指しで拒否します。
+- BR01: `sources.lock.edn` と inert な `.github/workflows/contract.yml` は旧 `etzhayyim/com-etzhayyim-ooyake` 名（現 `kotoba-lang/ooyake` への rename redirect で解決）を pin しています。再 lock は rebuild + 生成データ再コミットを伴う別 PR とし、この PR では `contract.yml` を変更しません。

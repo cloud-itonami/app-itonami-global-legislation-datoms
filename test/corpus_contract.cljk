@@ -34,6 +34,25 @@
   (assert (pos? (:corpus/text-bytes-addressed corpus))
           "corpus addresses zero bytes of text -- the whole point is the text")
 
+  ;; ZB18-R1-SG01: per-source structural invariants for EU/UK/US (not JP only).
+  ;; Cheap manifest-level checks; no extra Datascript load. Each named source
+  ;; must have positive laws/relations, resolved <= total, and shard sums
+  ;; matching the source totals recorded in the manifest.
+  (let [sources (into {} (map (juxt :dataset identity)) (:corpus/sources manifest))
+        shard-sums (reduce (fn [acc {:keys [dataset entities]}] (update acc dataset (fnil + 0) entities)) {} (:corpus/shards manifest))]
+    (doseq [[dataset juris min-laws min-rels] [["jp.go.e-gov.elaws" "JPN" 9000 7000]
+                                                ["eu.europa.eur-lex" "EU" 60000 500000]
+                                                ["uk.gov.legislation" "GBR" 3000 100000]
+                                                ["gov.govinfo.bulkdata" "USA" 18000 11000]]
+            :let [s (get sources dataset)]]
+      (assert s (str "SG01: corpus source missing from manifest: " dataset))
+      (assert (= juris (:jurisdiction s)) (str "SG01: " dataset " jurisdiction drifted: " (:jurisdiction s)))
+      (assert (>= (:laws s) min-laws) (str "SG01: " dataset " laws regressed to " (:laws s)))
+      (assert (>= (:relations s) min-rels) (str "SG01: " dataset " relations regressed to " (:relations s)))
+      (assert (<= (:relations-resolved s) (:relations s)) (str "SG01: " dataset " resolved exceeds total relations"))
+      (assert (pos? (:relations-resolved s)) (str "SG01: " dataset " has zero resolved edges -- graph dangling"))
+      (assert (= (+ (:laws s) (:relations s)) (get shard-sums dataset)) (str "SG01: " dataset " shard entity sum differs from laws+relations"))))
+
   ;; Every declared shard must exist. Globbing the directory instead would
   ;; make a missing shard read as "less data", not as a broken projection.
   (doseq [{:keys [path entities]} (:corpus/shards manifest)]

@@ -1,0 +1,25 @@
+#!/usr/bin/env nbb
+;; ZB18-R1-NG01 contract: tampered law-text bytes sha256/CID must fail named.
+;; Runs REAL bin/verify-law-text-cids.cljk on temp fixtures. Run: nbb test/law_text_cids_contract.cljk
+(ns law-text-cids-contract (:require [clojure.string :as str] [edamame.core :as edn]))
+(def fs (js/require "fs")) (def os (js/require "os")) (def node-path (js/require "path")) (def child (js/require "child_process")) (def crypto (js/require "crypto"))
+(def script (.resolve node-path "bin/verify-law-text-cids.cljk")) (def nbb (or (aget (.-env js/process) "NBB_BIN") "nbb"))
+(defn sha [s] (.digest (.update (.createHash crypto "sha256") (.from js/Buffer s "utf8")) "hex"))
+(defn hex->bytes [h] (mapv #(js/parseInt (subs h % (+ % 2)) 16) (range 0 64 2)))
+(def alpha "abcdefghijklmnopqrstuvwxyz234567")
+(defn cid-of [hex] (str "b" (let [bytes (into [1 0x55 0x12 0x20] (hex->bytes hex)) bits (vec (mapcat (fn [b] (mapv #(bit-and (bit-shift-right b %) 1) [7 6 5 4 3 2 1 0])) bytes)) r (mod (count bits) 5) padded (if (zero? r) bits (into bits (repeat (- 5 r) 0)))] (apply str (map (fn [g] (nth alpha (reduce (fn [a bit] (+ (* a 2) bit)) 0 g))) (partition 5 padded))))))
+(defn write! [root rel c] (let [p (.join node-path root rel)] (.mkdirSync fs (.dirname node-path p) #js{:recursive true}) (.writeFileSync fs p c)))
+(defn fixture! [root tamper]
+  (.rmSync fs root #js{:recursive true :force true})
+  (let [good (sha "hello law") cid (cid-of good) fetched (if (= tamper :sha) (sha "tampered bytes") good) cid2 (if (= tamper :cid) (cid-of (sha "other")) cid)]
+    (write! root "storage/law-text-cids.edn" (str "{:manifest/version 1 :rows [{:law-id \"FX1\" :kind :match :fetched-bytes 9 :fetched-sha256 \"" fetched "\" :cid \"" cid2 "\" :annex-sha256 \"" good "\"}]}\n"))
+    (write! root "storage/yataverse-receipts/law-texts--car-000-gaps.json" "{\"roots\":[\"bafkreiabc\"],\"verified\":true,\"receiptCid\":\"bafyreiabc\"}\n")))
+(defn run [root] (let [r (.spawnSync child nbb #js[script root] #js{:encoding "utf8" :timeout 120000})] {:status (.-status r) :out (str (.-stdout r) (.-stderr r))}))
+(def root (.mkdtempSync fs (.join node-path (.tmpdir os) "ng01-")))
+(try
+  (fixture! root nil) (let [{:keys [status out]} (run root)] (assert (= 0 status) (str "positive must pass: " out)))
+  (fixture! root :sha) (let [{:keys [status out]} (run root)] (assert (not= 0 status) "tampered sha256 must fail") (assert (str/includes? out "FX1") "must name law-id") (assert (str/includes? out "CID mismatch") "must name CID mismatch"))
+  (fixture! root :cid) (let [{:keys [status out]} (run root)] (assert (not= 0 status) "tampered CID must fail") (assert (str/includes? out "CID") "must name CID"))
+  (println "NG01 law-text tamper: positive + sha256/CID negatives behave")
+  (finally (.rmSync fs root #js{:recursive true :force true})))
+(println {:status :ok})

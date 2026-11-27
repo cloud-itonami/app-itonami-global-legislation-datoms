@@ -43,6 +43,14 @@
 (defn sha256-hex [buf]
   (.digest (.update (.createHash crypto "sha256") buf) "hex"))
 
+(defn valid-eli-uri?
+  "ZB18-R1-NG05: an ELI URI must be http(s)://data.europa.eu/eli/<type>/<...>
+  with non-blank path segments. Anything else is rejected by name, not
+  merely described by shape."
+  [v]
+  (boolean (and (string? v)
+                (re-matches #"https?://data\.europa\.eu/eli/[A-Za-z0-9_~.-]+/[^\s?#]+" v))))
+
 (defn shape-of
   "Coarse, purely descriptive shape of one :law/eli string value:
   scheme://host plus the first two path segments. Anything without a
@@ -167,6 +175,9 @@
                           (when-not (string? v)
                             (bad! "law entity" (pr-str k) "in" path
                                   "has non-string :law/eli:" (pr-str v)))
+                          (when (and (string? v) (not (valid-eli-uri? v)))
+                            (bad! "law entity" (pr-str k) "in" path
+                                  "has invalid ELI URI:" (pr-str v)))
                           (when (string? v)
                             (swap! eli-keys update v (fnil conj []) k)))))
                 ;; One row per [dataset jurisdiction]: the global
