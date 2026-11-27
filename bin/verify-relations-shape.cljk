@@ -1,0 +1,23 @@
+#!/usr/bin/env nbb
+;; ZB18-R1-NG04: shapes relations-*.edn rows. Usage: nbb bin/verify-relations-shape.cljk <file...>
+;; A legitimate external edge has :law.rel/resolved? false BUT still carries
+;; :law.rel/kind and :law.rel/to. Missing either is a shape error, not an external edge.
+(ns verify-relations-shape (:require [clojure.string :as str] [edamame.core :as edn]))
+(def fs (js/require "fs"))
+(def allowed #{:law.rel/amends :law.rel/repeals :law.rel/implicitly-repeals :law.rel/based-on :law.rel/completes :law.rel/corrects :law.rel/codified-as :law.rel/cites :law.rel/became-law :law.rel/identical-measure :law.rel/companion-measure :law.rel/procedurally-related :law.rel/related-measure})
+(def problems (atom [])) (defn bad! [& xs] (swap! problems conj (str/join " " (map str xs))))
+(def files (vec *command-line-args*))
+(when (empty? files) (bad! "no relations file given"))
+(doseq [p files]
+  (let [parsed (try (edn/parse-string (.toString (.readFileSync fs p))) (catch js/Error e (bad! "cannot parse" p ":" (.-message e)) nil))]
+    (when parsed (let [ents (if (vector? parsed) parsed [parsed])]
+      (doseq [e ents]
+        (let [id (or (:law.rel/id e) (:law.rel/from e) (pr-str e))]
+          (when-not (contains? e :law.rel/kind) (bad! "relation" id "in" p "missing :rel/kind (:law.rel/kind)"))
+          (when (and (contains? e :law.rel/kind) (not (contains? allowed (:law.rel/kind e)))) (bad! "relation" id "in" p "unknown :rel/kind" (pr-str (:law.rel/kind e))))
+          (when-not (contains? e :law.rel/to) (bad! "relation" id "in" p "missing :rel/to (:law.rel/to)"))
+          (when (and (contains? e :law.rel/to) (not (and (string? (:law.rel/to e)) (not (str/blank? (:law.rel/to e)))))) (bad! "relation" id "in" p ":rel/to not a non-blank string:" (pr-str (:law.rel/to e))))
+          (when-not (contains? e :law.rel/from) (bad! "relation" id "in" p "missing :rel/from (:law.rel/from)"))
+          (when (and (contains? e :law.rel/resolved?) (not (boolean? (:law.rel/resolved? e)))) (bad! "relation" id "in" p ":law.rel/resolved? not boolean"))))
+      (println (str p ": " (count ents) " relation(s) checked"))))))
+(if (seq @problems) (do (binding [*out* *err*] (println (str "FAIL -- " (count @problems) " problem(s):")) (doseq [x @problems] (println (str "  - " x)))) (set! (.-exitCode js/process) 1)) (println "OK"))

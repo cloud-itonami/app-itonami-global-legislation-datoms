@@ -109,13 +109,18 @@
 (defn build-jurisdictions [legal-sources legislatures courts country-names]
   (let [codes (into #{} (concat (map :legal-source/jurisdiction legal-sources)
                                  (map :legislature/jurisdiction legislatures)
-                                 (map :court/jurisdiction courts)))]
+                                 (map :court/jurisdiction courts)))
+        unknown (sort (filter (fn [code] (not (or (get country-names code) (get supranational-fallback-names code)))) codes))]
+    ;; ZB18-R1-NG03: fail-closed on unknown jurisdiction codes. Silently
+    ;; falling back to the code itself as its name masked upstream drift.
+    (when (seq unknown)
+      (binding [*out* *err*]
+        (println (str "FAIL: unknown jurisdiction code(s) with no country name and no supranational fallback: " (str/join ", " unknown))))
+      (throw (js/Error. (str "unknown jurisdiction code: " (str/join ", " unknown)))))
     (vec (for [code (sort codes)]
            (let [name (or (get country-names code) (get supranational-fallback-names code))]
-             (when-not name
-               (binding [*out* *err*] (println (str "WARN: no name found for jurisdiction code " code))))
              {:jurisdiction/code code
-              :jurisdiction/name (or name code)
+              :jurisdiction/name name
               :jurisdiction/kind (jurisdiction-kind code country-names)})))))
 
 (def unique-id-attrs
